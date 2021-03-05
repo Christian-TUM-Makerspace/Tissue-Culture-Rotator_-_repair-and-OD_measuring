@@ -1,7 +1,7 @@
 // Reagenzglasläufer
 
 // A simple program made for testing stepper motor and sensors, translated from German to English and cleaned up. Deleted simple PWM control for stepper motor.
-// Based on https://github.com/Christian-TUM-Makerspace/Reagenzglaslaeufer/blob/84c252155a99b0ee770eb47fd73a26b7c4aa0031/testcode/OPT101_und_Schrittmotor_und_Hall-Sensor_1.0.1.ino
+// Based on testcode/OPT101_und_Schrittmotor_und_Hall-Sensor_1.0.1.ino
 
 // Christian Schormair christianschormair@gmx.de christian.schormair@tum.de
 
