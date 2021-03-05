@@ -8,4 +8,4 @@ A sensor for the oclusion density (OD) of the liquid in the test tubes is added.
 
 The ... Drehscheibe usw. ... is rebuilt in order to allow the OD measurements.
 
-The project involves progamming, elektronics, 3D CAD, 3D printing, Lasercutting and more.
+The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting and more.
