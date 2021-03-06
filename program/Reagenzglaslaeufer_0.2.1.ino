@@ -1,5 +1,7 @@
 // Reagenzglasläufer
 
+//Tasks to be implemented below the code
+
 // Christian Schormair christian.schormair@tum.de
 // Hans ... Nachname...?
 
@@ -15,7 +17,22 @@ TaskHandle_t readStopButtonHandle=NULL;
 //ESP-FlexyStepper library already has built in xTaskCreate, without vTaskDelay()
 
 void setup() {
-    Serial.begin(115200);
+  Serial.begin(115200);
+  
+  
+  //create readOpt task through FreeRTOS, executed in the readOpt() function, priority 3, core 0
+  xTaskCreatePinnedToCore(
+                    readOpt,     // Function that implements the task.
+                    "readOpt",   // name of task.
+  /*reduce when I understand it better */10000,       // Stack size in bytes, not words.
+                    NULL,        // Parameter passed into the task.   or: ( void * ) 1,    
+                    3,           // priority of the task
+                    &readOptHandle,// Task handle to keep track of created task
+                    0);          // pin task to core 0
+  //The same for hall effect sensor and stop button, each: priority lower priority than readOpt, core 1
+  xTaskCreatePinnedToCore(readHall,"readHall", 10000, NULL, 1, readHallHandle, 1);
+  xTaskCreatePinnedToCore(readStopButton,"readStopButton", 10000, NULL, 2, readStopButtonHandle, 1);
+  
 }
 
 void loop() {
@@ -29,6 +46,7 @@ void loop() {
   //https://savjee.be/2020/01/multitasking-esp32-arduino-freertos/
   //https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
   //https://www.instructables.com/ESP32-With-Arduino-IDE-Multi-Core-Programming/
+  //https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/freertos.html#_CPPv412TaskHandle_t
 
 // "at the same time, all the time":
   //drive stepper motor ESP_FlexyStepper.h  https://github.com/pkerspe/ESP-FlexyStepper
@@ -47,7 +65,7 @@ void loop() {
   //send ENA (to make the stepper motor loose), stop data processing meanwhile
   //correct position if neccessary
   //maybe turn on/off a LED or use a display that shows, if the maximum of the the range of the opt101 is reached 
-                                    //(adjust sensitivity of the sensor through potentiometer if neccessary)
+                                    //(to adjust sensitivity of the sensor through potentiometer if neccessary)
 
 // Hard coded "variables". Change here in the code and load up the new program to the ESP32. 
 // Avoids the need for a display, buttons and additional programming for that. We will see if that is enough.
