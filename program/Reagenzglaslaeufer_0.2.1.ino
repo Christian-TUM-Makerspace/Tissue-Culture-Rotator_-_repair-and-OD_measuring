@@ -8,6 +8,10 @@
   
 //variables and constants
 
+//Tasks for Multitasking through FreeRTOS (xTaskCreate)
+TaskHandle_t readOpt;
+//ESP-FlexyStepper library already has built in xTaskCreate without vTaskDelay()
+
 void setup() {
     Serial.begin(115200);
 }
@@ -18,6 +22,11 @@ void loop() {
 /////////////////////////
 //Tasks to be implemented:
 /////////////////////////
+
+//Information about multitasking on ESP32:
+  //https://savjee.be/2020/01/multitasking-esp32-arduino-freertos/
+  //https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
+  //https://www.instructables.com/ESP32-With-Arduino-IDE-Multi-Core-Programming/
 
 // "at the same time, all the time":
   //drive stepper motor https://github.com/pkerspe/ESP-FlexyStepper
