@@ -1,6 +1,6 @@
 // Reagenzglasläufer
 
-//Tasks to be implemented below the code
+//Tasks to be implemented are listed below the code
 
 // Christian Schormair christian.schormair@tum.de
 // Hans ... Nachname...?
@@ -10,7 +10,7 @@
   
 //variables and constants
 const int tubecount = 30;
-var int[tubecount]={0};
+int glascount[tubecount]={0};
 
 //Task handles for Multitasking through FreeRTOS (see "Information about multitasking on ESP32" below)
 TaskHandle_t readOptHandle=NULL;
@@ -32,10 +32,15 @@ void setup() {
                     &readOptHandle,// Task handle to keep track of created task
                     0);          // pin task to core 0
   //The same for hall effect sensor and stop button, each: priority lower priority than readOpt, core 1
-  xTaskCreatePinnedToCore(readHall,"readHall", 10000, NULL, 1, readHallHandle, 1);
-  xTaskCreatePinnedToCore(readStopButton,"readStopButton", 10000, NULL, 2, readStopButtonHandle, 1);
+  xTaskCreatePinnedToCore(readHall,"readHall", 10000, NULL, 1, &readHallHandle, 1);
+  xTaskCreatePinnedToCore(readStopButton,"readStopButton", 10000, NULL, 2, &readStopButtonHandle, 1);
   
 }
+
+void readOpt(void * pvParameters){}
+void readHall(void * pvParameters){}
+void readStopButton(void * pvParameters){}
+
 
 void loop() {
 }
