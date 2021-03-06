@@ -1,5 +1,3 @@
-//test main branch while changing stepper
-
 // Reagenzglasläufer
 
 // Christian Schormair christian.schormair@tum.de
@@ -11,6 +9,7 @@
 //variables and constants
 
 void setup() {
+    Serial.begin(115200);
 }
 
 void loop() {
