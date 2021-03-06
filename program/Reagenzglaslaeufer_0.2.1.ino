@@ -37,8 +37,20 @@ void setup() {
   
 }
 
-void readOpt(void * pvParameters){}
-void readHall(void * pvParameters){}
+void readOpt(void * pvParameters){
+  (void) pvParameters;
+  for(;;){
+    Serial.println("readOpt");
+    vTaskDelay(100);
+  }
+}
+void readHall(void * pvParameters){
+  (void) pvParameters;
+  for(;;){
+    Serial.println("readHall");
+    vTaskDelay(250);
+  }
+}
 void readStopButton(void * pvParameters){}
 
 
