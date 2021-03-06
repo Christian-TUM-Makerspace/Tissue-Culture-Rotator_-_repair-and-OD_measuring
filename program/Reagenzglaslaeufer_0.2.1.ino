@@ -8,8 +8,10 @@
   
 //variables and constants
 
-//Tasks for Multitasking through FreeRTOS (xTaskCreate)
-TaskHandle_t readOpt;
+//Task handles for Multitasking through FreeRTOS 
+TaskHandle_t readOpt=NULL;
+TaskHandle_t readHall=NULL;
+TaskHandle_t readStopButton=NULL;
 //ESP-FlexyStepper library already has built in xTaskCreate without vTaskDelay()
 
 void setup() {
