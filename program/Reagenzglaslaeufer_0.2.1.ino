@@ -10,7 +10,7 @@
   
 //variables and constants
 const int tubecount = 30;
-int glascount[tubecount]={0};
+int tubes[tubecount]={0};
 
 //Task handles for Multitasking through FreeRTOS (see "Information about multitasking on ESP32" below)
 TaskHandle_t readOptHandle=NULL;
