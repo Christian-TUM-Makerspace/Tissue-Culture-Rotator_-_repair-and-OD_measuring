@@ -1,0 +1,56 @@
+// Tasks with FreeRTOS test program
+
+// Copied and changed from:
+// https://savjee.be/2020/01/multitasking-esp32-arduino-freertos/
+
+// 2 tasks with endless loops with Serial.print().
+// This should be almost the minimal code for that.
+
+// By swapping the task priorities (task priority 1 for Testtask1, task priority 2 for Testtask2)
+// the order of the println in both tasks actually changes. See serial monitor.
+
+void setup(){
+  Serial.begin(115200);
+
+  xTaskCreate(
+    Testtask1,    // Function that should be called
+    "Testtask1",   // Name of the task (for debugging)
+    1000,            // Stack size (bytes)
+    NULL,            // Parameter to pass
+    2,               // Task priority
+    NULL             // Task handle
+  );
+
+  xTaskCreate(
+    Testtask2,    // Function that should be called
+    "Testtask2",   // Name of the task (for debugging)
+    1000,            // Stack size (bytes)
+    NULL,            // Parameter to pass
+    1,               // Task priority
+    NULL             // Task handle
+  );
+}
+
+void Testtask1(void * parameter){
+  for(;;){ // infinite loop
+
+    Serial.println("Testtask 1");
+
+    // Pause the task for 500ms
+    vTaskDelay(500 / portTICK_PERIOD_MS); //portTICK_PERIOD_MS for milliseconds instead of "ticks
+  }
+}
+
+void Testtask2(void * parameter){
+  for(;;){ // infinite loop
+
+    Serial.print("  Testtask 2");
+
+    // Pause the task for 500ms
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+  }
+}
+
+void loop(){
+  
+}
