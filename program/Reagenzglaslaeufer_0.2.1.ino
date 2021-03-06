@@ -4,7 +4,7 @@
 // Hans ... Nachname...?
 
 //libraries
-  //ESP-FlexyStepper
+#include <ESP_FlexyStepper.h>
   
 //variables and constants
 
@@ -31,10 +31,11 @@ void loop() {
   //https://www.instructables.com/ESP32-With-Arduino-IDE-Multi-Core-Programming/
 
 // "at the same time, all the time":
-  //drive stepper motor https://github.com/pkerspe/ESP-FlexyStepper
+  //drive stepper motor ESP_FlexyStepper.h  https://github.com/pkerspe/ESP-FlexyStepper
   //read opt101
   //read hall sensor (maybe only when its likely that the magnet is near, between opt101)
-  //read flip switch or button for ENA, to make the stepper motor loose
+  //read flip switch or button for ENA, to make the stepper motor loose 
+                            //(Use, but please note the last comment at: ESP_FlexyStepper.h -> Example3_EmercencySwitch)
 
 // other tasks:
   //accelerate stepper motor
@@ -48,7 +49,7 @@ void loop() {
   //maybe turn on/off a LED or use a display that shows, if the maximum of the the range of the opt101 is reached 
                                     //(adjust sensitivity of the sensor through potentiometer if neccessary)
 
-// Hardcoded "variables". Change here in the code and load up the new program to the ESP32. 
+// Hard coded "variables". Change here in the code and load up the new program to the ESP32. 
 // Avoids the need for a display, buttons and additional programming for that. We will see if that is enough.
 // Hardcoded "variables":
   //speed of the stepper motor
