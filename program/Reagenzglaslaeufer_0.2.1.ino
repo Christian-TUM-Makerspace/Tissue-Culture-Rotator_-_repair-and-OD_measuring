@@ -8,11 +8,11 @@
   
 //variables and constants
 
-//Task handles for Multitasking through FreeRTOS 
-TaskHandle_t readOpt=NULL;
-TaskHandle_t readHall=NULL;
-TaskHandle_t readStopButton=NULL;
-//ESP-FlexyStepper library already has built in xTaskCreate without vTaskDelay()
+//Task handles for Multitasking through FreeRTOS (see "Information about multitasking on ESP32" below)
+TaskHandle_t readOptHandle=NULL;
+TaskHandle_t readHallHandle=NULL;
+TaskHandle_t readStopButtonHandle=NULL;
+//ESP-FlexyStepper library already has built in xTaskCreate, without vTaskDelay()
 
 void setup() {
     Serial.begin(115200);
