@@ -37,22 +37,37 @@ void setup() {
   
 }
 
-void readOpt(void * pvParameters){
-  (void) pvParameters;
-  for(;;){
-    Serial.println("readOpt");
-    vTaskDelay(100);
-  }
-}
 void readHall(void * pvParameters){
-  (void) pvParameters;
-  for(;;){
+//  delay(1020);
+  for(;;){ // infinite loop
     Serial.println("readHall");
-    vTaskDelay(250);
+
+    // Pause the task for 500ms
+    vTaskDelay(500 / portTICK_PERIOD_MS);
+  }
+  
+}
+void readStopButton(void * pvParameters){
+//  delay(1030);
+  for(;;){ // infinite loop
+    Serial.println("readStopButton");
+    
+    // Pause the task for 500ms
+    vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }
-void readStopButton(void * pvParameters){}
 
+void readOpt(void * pvParameters){
+//  delay(1010);
+  for(;;){ // infinite loop
+
+    Serial.println("readOpt");
+
+    // Pause the task for 500ms
+    vTaskDelay(500 / portTICK_PERIOD_MS); //portTICK_PERIOD_MS for milliseconds instead of "ticks
+  }
+  
+}
 
 void loop() {
 }
