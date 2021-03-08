@@ -18,7 +18,11 @@ Arduino IDE, Python, ESP32, Inventor, FDM 3D Printer with about 300 x 300 bed, C
 ## Tags
 
 New Brunswick Scientific TC-7
+
 Gewebekultur-Rotator
+
 Tissue Culture Rotator
+
 Rotating Mixer
+
 Drum Rotator
