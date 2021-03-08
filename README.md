@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The main purpose of this project is to repair a ... device... It is a makerspace student project. 
+The main purpose of this project is to repair a new brunswick scientific rotator tc7. It is a makerspace student project. 
 
 Only the old electric motor of the ... is defective. It is replaced by a stepper motor. 
 
