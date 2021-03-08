@@ -1,4 +1,4 @@
-# Reagenzglaslaeufer
+# Tissue-Culture Rotator - repair and OD measuring
 
 ## Introduction
 
