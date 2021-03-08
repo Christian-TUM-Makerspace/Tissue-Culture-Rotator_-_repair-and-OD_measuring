@@ -14,3 +14,10 @@ The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting 
 
 Some specific programs, devices etc. used in this project: 
 Arduino IDE, Python, ESP32, Inventor, FDM 3D Printer with about 300 x 300 bed, China Lasercutter.
+
+#Tags
+New Brunswick Scientific TC-7
+Gewebekultur-Rotator
+Tissue Culture Rotator
+Rotating Mixer
+Drum Rotator
