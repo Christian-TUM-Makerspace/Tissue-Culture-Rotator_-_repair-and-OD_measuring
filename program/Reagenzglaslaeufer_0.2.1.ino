@@ -83,7 +83,7 @@ void loop() {
   //https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/freertos.html#_CPPv412TaskHandle_t
 
 // "at the same time, all the time":
-  //drive stepper motor ESP_FlexyStepper.h  https://github.com/pkerspe/ESP-FlexyStepper
+  //drive stepper motor ESP_FlexyStepper.h  https://github.com/gin66/FastAccelStepper (https://github.com/pkerspe/ESP-FlexyStepper)
   //read opt101
   //read hall sensor (maybe only when its likely that the magnet is near, between opt101)
   //read flip switch or button for ENA, to make the stepper motor loose 
