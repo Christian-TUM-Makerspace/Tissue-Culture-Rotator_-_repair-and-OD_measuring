@@ -27,7 +27,7 @@ Rotating Mixer
 
 Drum Rotator
 
-## Lessons Learned
+## Lessons learned
 
 Maybe it would have been easier to use an other type of motor.
 
