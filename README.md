@@ -15,6 +15,10 @@ The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting 
 Some specific programs, devices etc. used in this project: 
 Arduino IDE, Python, ESP32, Inventor, FDM 3D Printer with about 300 x 300 bed, China Lasercutter.
 
+## There are important READMEs in the subfolders
+
+Do not overlook them.
+
 ## Tags
 
 New Brunswick Scientific TC-7
