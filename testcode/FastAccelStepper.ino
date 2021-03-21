@@ -9,6 +9,9 @@
 #define enablePinStepper 35
 #define stepPinStepper   33
 
+// maybe it is better to turn auto_enable off
+// FastAccelStepper.h   line 69 - 90
+bool auto_enable = false;
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
@@ -25,13 +28,15 @@ void loop() {
       stepper->setEnablePin(enablePinStepper);
       stepper->setAutoEnable(true);
 
-      //stepper->setSpeedInHz(6400);       // 500 steps/s
-      stepper->setAcceleration(500);    // 100 steps/s²
-      //stepper->move(100); //lower value -> longer movement, why?
-      stepper->setSpeedInHz(1600);  
-      stepper->move(5);
-      //stepper->setSpeedInHz(0);
-      //delay(2000);
+        
+      stepper->setSpeedInHz(500);       // 500 steps/s
+      stepper->setAcceleration(100);    // 100 steps/s²
+      stepper->move(1000); //lower value -> longer movement, why? the value is a position, but what kind of position?
+
+      /*stepper->setSpeedInHz(1600);  
+      stepper->setAcceleration(500);    
+      stepper->move(5); //lower value -> longer movement, why?
+      delay(2000);*/
       
      }
 }
