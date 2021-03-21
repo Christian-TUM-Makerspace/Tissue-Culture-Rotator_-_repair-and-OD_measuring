@@ -137,11 +137,6 @@ void loop() {
       stepper->setAcceleration(500);    
       stepper->move(5); //lower value -> longer movement, why?
       delay(2000);*/
-
-
-  // Set the current position of the stepper - either in standstill or while moving
-  // FastAccelStepper.h   line 101
-      void setCurrentPosition(int32_t new_pos);
       
      }
 }
