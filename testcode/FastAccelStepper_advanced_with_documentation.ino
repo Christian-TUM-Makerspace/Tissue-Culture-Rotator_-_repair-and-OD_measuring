@@ -9,6 +9,7 @@
 //There is much text and it is hard to find the basics there.
 //Some annotations from there were copied to this sketch with own annotations added.
 
+//This library was chosen because it uses PWM on the ESP32, which should be much much less CPU-intensive.
 
 /*  
 
