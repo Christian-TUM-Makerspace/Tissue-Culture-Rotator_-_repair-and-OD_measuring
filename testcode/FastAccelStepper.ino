@@ -10,6 +10,7 @@
 #define stepPinStepper   33
 
 // maybe it is better to turn auto_enable off
+// maybe that avoids problems with many operations "at the same time"
 // FastAccelStepper.h   line 69 - 90
 bool auto_enable = false;
 
