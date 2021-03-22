@@ -15,12 +15,14 @@
 
   // about enable and disable
   // FastAccelStepper.h   line 51 ff
+  https://github.com/gin66/FastAccelStepper/blob/2e0bba84d3dead4e6b8de964defb1c3f78daa21f/src/FastAccelStepper.h#L51
 
   
   // maybe it is better to turn auto_enable off
   // maybe that avoids problems with many operations "at the same time"
   // FastAccelStepper.h   line 69 - 90
   bool auto_enable = false;
+  stepper->setAutoEnable(false);
 
   
   // Retrieve the current position of the stepper
@@ -109,35 +111,43 @@
 #include "FastAccelStepper.h"
 
 
-#define dirPinStepper    34
-#define enablePinStepper 35
+#define dirPinStepper    32
+#define enablePinStepper 25
 #define stepPinStepper   33
 
-bool auto_enable = false;
+
+//microsteps per step. Set at the stepper driver. 1, 2 , 4, 8, 16, 32
+//#define microstepmode 8
+#define pulsesPerRev  1600 // = 200 * microstepmode. See table at stepper driver.
+//Set speed here:
+#define revPerSecond  2
+//The following are own ("default") variables, the other speeds and accelerations are part of FastAccelStepper.h
+#define defaultSpeedInHz pulsesPerRev * revPerSecond // in (micro-)steps/s
+//Set acceleration here:
+#define defaultAcceleration  400 // in steps/s²
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
 
 void setup() {
-   engine.init();
-   stepper = engine.stepperConnectToPin(stepPinStepper);
+  engine.init();
+  stepper = engine.stepperConnectToPin(stepPinStepper);
+
+  stepper->setDirectionPin(dirPinStepper);
+  stepper->setEnablePin(enablePinStepper);
+  stepper->setAutoEnable(false);
 
 }
 
 void loop() {
-     if (stepper) {
-      stepper->setDirectionPin(dirPinStepper);
-      stepper->setEnablePin(enablePinStepper);
-      stepper->setAutoEnable(true);
+  stepper->enableOutputs();
 
-        
-      stepper->setSpeedInHz(500);       // 500 steps/s
-      stepper->setAcceleration(100);    // 100 steps/s²
-      stepper->move(1000); //lower value -> longer movement, why?
+
+      stepper->setSpeedInHz(defaultSpeedInHz);       // 500 steps/s
+      stepper->setAcceleration(defaultAcceleration);    // 100 steps/s²
+      stepper->move(100); //lower value -> longer movement, why?   
       /*stepper->setSpeedInHz(1600);  
       stepper->setAcceleration(500);    
       stepper->move(5); //lower value -> longer movement, why?
       delay(2000);*/
-      
-     }
 }
