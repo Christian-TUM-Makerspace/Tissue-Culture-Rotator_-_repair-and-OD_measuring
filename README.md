@@ -13,7 +13,7 @@ The wheel is rebuilt from scratch in order to allow the OD measurements.
 The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting and more.
 
 Some specific programs, devices etc. used in this project: 
-Arduino IDE, Python, ESP32, Inventor, China Lasercutter.
+Arduino IDE, [FastAccelStepper library](https://github.com/gin66/FastAccelStepper), Python, ESP32, Inventor, China Lasercutter.
 
 ## There are important READMEs in the subfolders
 
