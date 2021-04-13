@@ -86,8 +86,8 @@ void loop() {
   //drive stepper motor ESP_FlexyStepper.h  https://github.com/gin66/FastAccelStepper (https://github.com/pkerspe/ESP-FlexyStepper)
   //read opt101
   //read hall sensor (maybe only when its likely that the magnet is near, between opt101)
-  //read flip switch or button for ENA, to make the stepper motor loose 
-                            //(Use, but please note the last comment at: ESP_FlexyStepper.h -> Example3_EmercencySwitch)
+
+
 
 // other tasks:
   //accelerate stepper motor
