@@ -118,13 +118,16 @@
 
 //microsteps per step. Set at the stepper driver. 1, 2 , 4, 8, 16, 32
 //#define microstepmode 8
-#define pulsesPerRev  1600 // = 200 * microstepmode. See table at stepper driver.
+#define pulsesPerRevMotor  1600 // = 200 * microstepmode. See table at stepper driver.
+//define timing belt pulleys here:
+#define gearRatio 50/25 //teeth on pulley on wheel divided through teeth pulley for motor
+#define pulsesPerRevWheel = pulsesPerRevMotor * gearRatio
 //Set speed here:
-#define revPerSecond  2
+#define revPerSecondWheel  2
 //The following are own ("default") variables, the other speeds and accelerations are part of FastAccelStepper.h
-#define defaultSpeedInHz pulsesPerRev * revPerSecond // in (micro-)steps/s
+#define defaultSpeedInHz pulsesPerRevWheel * revPerSecondWheel // in (micro-)steps/s
 //Set acceleration here:
-#define defaultAcceleration  400 // in steps/s²
+#define defaultAcceleration  pulsesPerRevMotor/4 // in steps/s²
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
