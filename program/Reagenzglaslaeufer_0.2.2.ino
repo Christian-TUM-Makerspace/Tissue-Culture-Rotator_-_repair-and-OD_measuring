@@ -75,6 +75,9 @@ void readStopButton(void){
   }
 }
 
+void processData(){
+  Serial.flush()
+}
 
 
 
