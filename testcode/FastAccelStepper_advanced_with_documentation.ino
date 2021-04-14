@@ -108,23 +108,24 @@
   // This can be called from an interrupt !
   void forceStopAndNewPosition(uint32_t new_pos);
 */
-#include "FastAccelStepper.h"
 
+//FastAccelStepper
+#include "FastAccelStepper.h"
 
 #define dirPinStepper    32
 #define enablePinStepper 25
 #define stepPinStepper   33
 
 
-//microsteps per step. Set at the stepper driver. 1, 2 , 4, 8, 16, 32
-//#define microstepmode 8
-#define pulsesPerRevMotor  1600 // = 200 * microstepmode. See table at stepper driver.
+//Set microstep mode at the stepper driver. 1, 2 , 4, 8, 16, 32
+//Set respective value here:
+#define pulsesPerRevMotor  1600 // = 200 * microstepmode. See table at stepper driver TB6600.
 //define timing belt pulleys here:
 #define gearRatio 50/25 //teeth on pulley on wheel divided through teeth pulley for motor
 #define pulsesPerRevWheel = pulsesPerRevMotor * gearRatio
 //Set speed here:
 #define revPerSecondWheel  2
-//The following are own ("default") variables, the other speeds and accelerations are part of FastAccelStepper.h
+//The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
 #define defaultSpeedInHz pulsesPerRevWheel * revPerSecondWheel // in (micro-)steps/s
 //Set acceleration here:
 #define defaultAcceleration  pulsesPerRevMotor // in steps/s²
