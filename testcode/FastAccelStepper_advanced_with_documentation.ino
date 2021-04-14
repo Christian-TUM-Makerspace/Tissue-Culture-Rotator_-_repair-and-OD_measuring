@@ -134,6 +134,8 @@ FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
 
 void setup() {
+  Serial.begin(115200);
+  
   engine.init();
   stepper = engine.stepperConnectToPin(stepPinStepper);
 
@@ -150,8 +152,8 @@ void loop() {
       stepper->setSpeedInHz(defaultSpeedInHz);       // 500 steps/s
       stepper->setAcceleration(defaultAcceleration);    // 100 steps/s²
       stepper->move(100); //lower value -> longer movement, why?   
-      /*stepper->setSpeedInHz(1600);  
-      stepper->setAcceleration(500);    
-      stepper->move(5); //lower value -> longer movement, why?
-      delay(2000);*/
+      Serial.println("Test");
+      delay(2000);
+  
+  
 }
