@@ -122,7 +122,7 @@
 #define pulsesPerRevMotor  1600 // = 200 * microstepmode. See table at stepper driver TB6600.
 //define timing belt pulleys here:
 #define gearRatio 50/25 //teeth on pulley on wheel divided through teeth pulley for motor
-#define pulsesPerRevWheel = pulsesPerRevMotor * gearRatio
+#define pulsesPerRevWheel pulsesPerRevMotor * gearRatio
 //Set speed here:
 #define revPerSecondWheel  2
 //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
