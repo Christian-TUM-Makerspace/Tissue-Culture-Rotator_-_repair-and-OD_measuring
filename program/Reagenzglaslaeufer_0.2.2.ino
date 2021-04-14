@@ -6,14 +6,38 @@
 //Tasks to be implemented are listed below the code
 
 //libraries
-#include <ESP_FlexyStepper.h>
+#include "FastAccelStepper.h"
+
+//definitions for FastAccelStepper.h
+  //Pins
+#define dirPinStepper    32
+#define enablePinStepper 25
+#define stepPinStepper   33
+  //Set microstep mode at the stepper driver. 1, 2 , 4, 8, 16, 32
+  //Set respective value here:
+#define pulsesPerRevMotor  1600 // = 200 * microstepmode. See table at stepper driver TB6600.
+  //define ratio for timing belt pulleys here:
+#define gearRatio 50/25 //teeth on pulley on wheel divided through teeth pulley for motor
+#define pulsesPerRevWheel = pulsesPerRevMotor * gearRatio
+  //Set speed here:
+#define revPerSecondWheel  2
+  //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
+#define defaultSpeedInHz pulsesPerRevWheel * revPerSecondWheel // in (micro-)steps/s
+  //Set acceleration here:
+#define defaultAcceleration  pulsesPerRevMotor // in steps/s²
+
+FastAccelStepperEngine engine = FastAccelStepperEngine();
+FastAccelStepper *stepper = NULL;
   
+
 //variables and constants
   //basics
 const unsigned short tubecount = 30;
 unsigned short tubes[tubecount]={0};
   //hall
 bool hall = false;
+  //for FastAccelStepper.h see above
+
 
 
 //ESP-FlexyStepper library already has built in xTaskCreate, without vTaskDelay()
@@ -21,10 +45,18 @@ bool hall = false;
 void setup() {
   Serial.begin(115200);
   
+  //for FastAccelStepper.h
+  engine.init();
+  stepper = engine.stepperConnectToPin(stepPinStepper);
+  stepper->setDirectionPin(dirPinStepper);
+  stepper->setEnablePin(enablePinStepper);
+  stepper->setAutoEnable(false);
+  
 }
 
 void loop() {
   //turn around
+  
   for(;;){
     //read hall repeatedly
     if hall true{
@@ -33,6 +65,9 @@ void loop() {
   }
 }
 
+void measureRev(){
+  
+}
 
 //replace by an interrupt
 void readStopButton(void){
