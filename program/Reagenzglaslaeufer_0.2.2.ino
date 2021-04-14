@@ -1,28 +1,38 @@
-// Reagenzglasläufer
-
-//Tasks to be implemented are listed below the code
+// Tissue-Culture-Rotator/Reagenzglasläufer
 
 // Christian Schormair christian.schormair@tum.de
 // Hans Ewigmann
+
+//Tasks to be implemented are listed below the code
 
 //libraries
 #include <ESP_FlexyStepper.h>
   
 //variables and constants
-const int tubecount = 30;
-int tubes[tubecount]={0};
+  //basics
+const unsigned short tubecount = 30;
+unsigned short tubes[tubecount]={0};
+  //hall
+bool hall = false;
+
 
 //ESP-FlexyStepper library already has built in xTaskCreate, without vTaskDelay()
 
 void setup() {
   Serial.begin(115200);
-}
-
-
-void readHall(void){
-  }
   
 }
+
+void loop() {
+  //turn around
+  for(;;){
+    //read hall repeatedly
+    if hall true{
+      measureRev();
+    }
+  }
+}
+
 
 //replace by an interrupt
 void readStopButton(void){
@@ -30,20 +40,9 @@ void readStopButton(void){
   }
 }
 
-void readOpt(void){
-  
-  for(;;){ // infinite loop
 
-    Serial.println("readOpt");
 
-    // Pause the task for 500ms
-    vTaskDelay(500 / portTICK_PERIOD_MS); //portTICK_PERIOD_MS for milliseconds instead of "ticks
-  }
-  
-}
 
-void loop() {
-}
 
 /////////////////////////
 //Tasks to be implemented:
