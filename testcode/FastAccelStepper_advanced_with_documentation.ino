@@ -127,7 +127,7 @@
 //The following are own ("default") variables, the other speeds and accelerations are part of FastAccelStepper.h
 #define defaultSpeedInHz pulsesPerRevWheel * revPerSecondWheel // in (micro-)steps/s
 //Set acceleration here:
-#define defaultAcceleration  pulsesPerRevMotor/4 // in steps/s²
+#define defaultAcceleration  pulsesPerRevMotor // in steps/s²
 
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
