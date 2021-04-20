@@ -10,27 +10,30 @@
 
 //definitions for FastAccelStepper.h
   //Pins
-const int dirPinStepper    =32;
-const int enablePinStepper =25;
-const int stepPinStepper   =33;
-  //Set microstep mode at the stepper driver. 1, 2 , 4, 8, 16, 32
+const short dirPinStepper    =32;
+const short enablePinStepper =25;
+const short stepPinStepper   =33;
+  //Set microstep mode at the stepper driver. 1, 2, 4, 8, 16, 32
   //Set respective value here:
-const int pulsesPerRevMotor = 1600; // = 200 * microstepmode. See table at stepper driver TB6600.
+const int stepsPerRevMotor = 1600; // = 200 * microstepmode. See table at stepper driver TB6600.
   //define ratio for timing belt pulleys here:
-const int gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
-const int pulsesPerRevWheel = pulsesPerRevMotor * gearRatio;
+const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
+const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const int rpsWheel  = 2;
+const float rpsWheel  = 2;
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
-const int defaultSpeedInHz = pulsesPerRevWheel * rpsWheel; // in (micro-)steps/s
+const float defaultSpeedInHz = stepsPerRevWheel * rpsWheel; // in (micro-)steps/s
   //Set acceleration here:
-const int defaultAcceleration = pulsesPerRevMotor; // in steps/s²
+const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
+
   //Set speed for measure revolution here (in revolutions per MINUTE)
-const int rpmMeasureWheel = 1;
-const int measureSpeedInHz = pulsesPerRevWheel * rpmMeasureWheel / 60;
+const float rpmMeasureWheel = 1;
+const float measureSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
-  
+
+void waitSpeedWaitHall (int speedMode);
+
 
 //variables and constants
   //basics
@@ -57,32 +60,42 @@ void setup() {
 }
 
 void loop() {
-  //turn around
-  
-  for(;;){
-    //read hall repeatedly
-    if hall true{
-      measureRev();
-    }
-  }
+  waitSpeedWaitHall(2);
 }
 
+void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed
+  float speedbeforeMilliHz = stepper->getSpeedInMilliHz();
+  float timeToAccelerate=0;//in ms, remains 0 if speedMode=1
+  if(speedMode==3){
+        stepper->setSpeedInHz(defaultSpeedInHz);
+        //Time to Accelerate in ms. Theoretically. Add some ms here. Squareroot of...
+        timeToAccelerate = sqrt(2 * abs(speedbeforeMilliHz-defaultSpeedInHz)/ defaultAcceleration)*1000+200;
+  }
+  if(speedMode==2){
+        stepper->setSpeedInHz(measureSpeedInHz);
+        timeToAccelerate = sqrt(2 * abs(speedbeforeMilliHz-measureSpeedInHz)/ defaultAcceleration)*1000+200;
+  }
+  stepper->runForward();
+  delay(timeToAccelerate);
+  
+}
+
+
+/*
 void measureRev(){
   
 }
 
 //replace by an interrupt
-void readStopButton(void){
-  for(;;){ // infinite loop
-  }
-}
+//void readStopButton(void){
+
 
 void processData(){
   Serial.flush()
 }
 
 
-
+*/
 
 /////////////////////////
 //Tasks to be implemented:
