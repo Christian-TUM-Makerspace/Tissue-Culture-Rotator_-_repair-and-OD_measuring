@@ -32,6 +32,7 @@ const float measureSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
 
+//functions must be declared before they can be called
 void waitSpeedWaitHall (int speedMode);
 
 
@@ -64,19 +65,19 @@ void loop() {
 }
 
 void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed
-  float speedbeforeMilliHz = stepper->getSpeedInMilliHz();
-  float timeToAccelerate=0;//in ms, remains 0 if speedMode=1
+  float speedbeforeHz = stepper->getSpeedInMilliHz()*1000;
+  float timeToAccelerateInMillisec=0;//in ms, remains 0 if speedMode=1
   if(speedMode==3){
         stepper->setSpeedInHz(defaultSpeedInHz);
         //Time to Accelerate in ms. Theoretically. Add some ms here. Squareroot of...
-        timeToAccelerate = sqrt(2 * abs(speedbeforeMilliHz-defaultSpeedInHz)/ defaultAcceleration)*1000+200;
+        timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz)/ defaultAcceleration)/1000+200;
   }
   if(speedMode==2){
         stepper->setSpeedInHz(measureSpeedInHz);
-        timeToAccelerate = sqrt(2 * abs(speedbeforeMilliHz-measureSpeedInHz)/ defaultAcceleration)*1000+200;
+        timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-measureSpeedInHz)/ defaultAcceleration)/1000+200;
   }
   stepper->runForward();
-  delay(timeToAccelerate);
+  delay(timeToAccelerateInMillisec);
   
 }
 
