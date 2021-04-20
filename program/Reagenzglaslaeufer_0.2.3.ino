@@ -10,22 +10,24 @@
 
 //definitions for FastAccelStepper.h
   //Pins
-#define dirPinStepper    32
-#define enablePinStepper 25
-#define stepPinStepper   33
+const int dirPinStepper    =32;
+const int enablePinStepper =25;
+const int stepPinStepper   =33;
   //Set microstep mode at the stepper driver. 1, 2 , 4, 8, 16, 32
   //Set respective value here:
-#define pulsesPerRevMotor  1600 // = 200 * microstepmode. See table at stepper driver TB6600.
+const int pulsesPerRevMotor = 1600; // = 200 * microstepmode. See table at stepper driver TB6600.
   //define ratio for timing belt pulleys here:
-#define gearRatio 50/25 //teeth on pulley on wheel divided through teeth pulley for motor
-#define pulsesPerRevWheel = pulsesPerRevMotor * gearRatio
-  //Set speed here:
-#define revPerSecondWheel  2
+const int gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
+const int pulsesPerRevWheel = pulsesPerRevMotor * gearRatio;
+  //Set speed here (in revolutions per second):
+const int rpsWheel  = 2;
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
-#define defaultSpeedInHz pulsesPerRevWheel * revPerSecondWheel // in (micro-)steps/s
+const int defaultSpeedInHz = pulsesPerRevWheel * rpsWheel; // in (micro-)steps/s
   //Set acceleration here:
-#define defaultAcceleration  pulsesPerRevMotor // in steps/s²
-
+const int defaultAcceleration = pulsesPerRevMotor; // in steps/s²
+  //Set speed for measure revolution here (in revolutions per MINUTE)
+const int rpmMeasureWheel = 1;
+const int measureSpeedInHz = pulsesPerRevWheel * rpmMeasureWheel / 60;
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
   
