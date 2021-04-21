@@ -20,12 +20,11 @@ const int stepsPerRevMotor = 1600; // = 200 * microstepmode. See table at steppe
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const float rpsWheel  = 2;
+const float defaultRpsWheel  = 2;
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
-const float defaultSpeedInHz = stepsPerRevWheel * rpsWheel; // in (micro-)steps/s
+const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; // in (micro-)steps/s
   //Set acceleration here:
 const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
-
   //Set speed for measure revolution here (in revolutions per MINUTE)
 const float rpmMeasureWheel = 1;
 const float measureSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
@@ -39,7 +38,8 @@ void waitSpeedWaitHall (int speedMode);
 //variables and constants
   //basics
 const unsigned short tubecount = 30;
-unsigned short tubes[tubecount]={0};
+  //array for measured values. first column [0] for raw data, second [1] for calculated OD
+unsigned short tubes[tubecount][2]={0};
   //hall
 bool hall = false;
   //for FastAccelStepper.h see above
@@ -58,43 +58,72 @@ void setup() {
   stepper->setEnablePin(enablePinStepper);
   stepper->setAutoEnable(true);
   stepper->setAcceleration(defaultAcceleration);
+  stepper->setSpeedInHz(0);  
   Serial.print("Default revolutions per second, wheel: ");
-  Serial.println(rpsWheel);
+  Serial.println(defaultRpsWheel);
   Serial.print("defaultSpeedInHz: ");
   Serial.println(defaultSpeedInHz);
   Serial.print("Measurement, revolutions per MINUTE, wheel: ");
   Serial.println(rpmMeasureWheel);  
   Serial.print("defaultAcceleration: ");
   Serial.println(defaultAcceleration);  
+
   
 }
 
 void loop() {
+  //stepper->stopMove();
+  /*stepper->setSpeedInHz(500);
+  stepper->runForward();  
+  delay(1000);
+  stepper->setSpeedInHz(300);
+
+  delay(1000);*/
+  Serial.print("position before waitSpeedWaitHall(3) ");
+  Serial.println(stepper->getCurrentPosition());
+  Serial.flush();
   waitSpeedWaitHall(3);
-  delay(20000);
+
+  Serial.print("position after waitSpeedWaitHall(3) ");
+  Serial.println(stepper->getCurrentPosition());
+  Serial.flush();
+  delay(10000);
+
+  Serial.print("position before waitSpeedWaitHall(0) ");
+  Serial.println(stepper->getCurrentPosition());
+  Serial.flush();
   waitSpeedWaitHall(0);
-  delay(20000);
+  Serial.print("Speed in Hz ");  
+  Serial.println(stepper->getSpeedInMilliHz()/1000);
+  //stepper->runForward();
+  Serial.print("position after waitSpeedWaitHall(0) ");
+  Serial.println(stepper->getCurrentPosition());
+  Serial.println(" ");
+  Serial.flush();
+  delay(10000);
 }
 
 void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing
-  float speedbeforeHz = stepper->getSpeedInMilliHz()*1000;
-  float timeToAccelerateInMillisec=0;//in ms, remains 0 if speedMode=1
+  float speedbeforeHz = stepper->getCurrentSpeedInMilliHz()/1000;
+  float timeToAccelerateInMillisec=0;//in ms
   if(speedMode==3){
     stepper->setSpeedInHz(defaultSpeedInHz);
     //Time to Accelerate in ms. Theoretically. Add some ms here.
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz) / defaultAcceleration) +200;
-    stepper->move(100);
+    Serial.print(" sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz)) = ");
+    Serial.println(sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz)));    
+    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz) / defaultAcceleration)*1000 +200;
+    stepper->runForward();
   }
   else if(speedMode==2){  
     stepper->setSpeedInHz(measureSpeedInHz);
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-measureSpeedInHz) / 1000/defaultAcceleration) +200;
+    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-measureSpeedInHz) / defaultAcceleration)*1000  +200;
     stepper->runForward();
   }
   else if(speedMode==0){
     stepper->setSpeedInHz(0);
     stepper->stopMove();
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-0) / 1000/defaultAcceleration) +200;
-    stepper->runForward();
+    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-0) / defaultAcceleration)*1000  +200;
+    //stepper->runForward();
   }
   else if(speedMode==4){
     Serial.println("Speedmode 4");
@@ -109,6 +138,8 @@ void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep spee
   }
 
   delay(timeToAccelerateInMillisec);
+  Serial.print("timeToAccelerateInMillisec ");
+  Serial.println(timeToAccelerateInMillisec);
 }
 
 
