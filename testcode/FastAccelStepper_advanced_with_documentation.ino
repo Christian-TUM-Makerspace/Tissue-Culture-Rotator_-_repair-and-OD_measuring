@@ -108,7 +108,8 @@
   // This can be called from an interrupt !
   void forceStopAndNewPosition(uint32_t new_pos);
   
-  //getCurrentSpeedInMilliHz() is actually the speed in Hertz * 1000
+  //Do not get confused:
+  //getCurrentSpeedInMilliHz() is calculated by: getCurrentSpeedInMilliHz() = speed in Hertz * 1000
   //in other words: how many steps happen in 1000 seconds
   //or: Speed in Hertz = getCurrentSpeedInMilliHz() / 1000
 */
