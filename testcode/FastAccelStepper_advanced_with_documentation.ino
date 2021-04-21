@@ -142,18 +142,21 @@ void setup() {
   stepper->setDirectionPin(dirPinStepper);
   stepper->setEnablePin(enablePinStepper);
   stepper->setAutoEnable(false);
-
+  stepper->enableOutputs();
+  
+  stepper->setSpeedInUs(1000);  // the parameter is us/step !!!
+  stepper->setAcceleration(1000);
 }
 
 void loop() {
-  stepper->enableOutputs();
-
-
-      stepper->setSpeedInHz(defaultSpeedInHz);       // 500 steps/s
-      stepper->setAcceleration(defaultAcceleration);    // 100 steps/s²
-      stepper->move(100); //lower value -> longer movement, why?   
-      Serial.println("Test");
-      delay(2000);
-  
-  
+  //Serial.print(stepper->getCurrentPosition());
+  //Serial.print("   ");
+  stepper->runForward();
+  delay(10000);
+  //Serial.println(stepper->getCurrentPosition());
+  stepper->stopMove();
+  Serial.println(stepper->getCurrentSpeedInMilliHz()*1000);
+  delay(10000);
+  Serial.println(stepper->getCurrentSpeedInMilliHz()*1000);
+  delay(2000);  
 }
