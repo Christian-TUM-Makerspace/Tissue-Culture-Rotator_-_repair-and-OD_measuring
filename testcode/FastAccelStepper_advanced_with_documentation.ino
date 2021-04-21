@@ -107,6 +107,10 @@
   // stop the running stepper immediately and set new_pos as new position
   // This can be called from an interrupt !
   void forceStopAndNewPosition(uint32_t new_pos);
+  
+  //getCurrentSpeedInMilliHz() is actually the speed in Hertz * 1000
+  //in other words: how many steps happen in 1000 seconds
+  //or: Speed in Hertz = getCurrentSpeedInMilliHz() / 1000
 */
 
 //FastAccelStepper
