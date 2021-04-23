@@ -15,7 +15,7 @@ const short enablePinStepper =25;
 const short stepPinStepper   =33;
   //Set microstep mode at the stepper driver. 1, 2, 4, 8, 16, 32
   //Set respective value here:
-const int stepsPerRevMotor = 1600; // = 200 * microstepmode. See table at stepper driver TB6600.
+const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at stepper driver TB6600.
   //define ratio for timing belt pulleys here:
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
@@ -26,13 +26,14 @@ const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; // in (micro-
   //Set acceleration here:
 const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
   //Set speed for measure revolution here (in revolutions per MINUTE)
-const float rpmMeasureWheel = 1;
+const float rpmMeasureWheel = 0.2;
 const float measureSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
 FastAccelStepperEngine engine = FastAccelStepperEngine();
 FastAccelStepper *stepper = NULL;
 
 //functions must be declared before they can be called
 void waitSpeedWaitHall (int speedMode);
+void measureRevolution();
 
 
 //variables and constants
@@ -43,6 +44,11 @@ unsigned short tubes[tubecount][2]={0};
   //hall
 bool hall = false;
   //for FastAccelStepper.h see above
+
+  //Pins for sensors, opt101 and hall effekt sensor KY-024
+const int optPin= 34;
+const int hallPin= 26;
+
 
 
 
@@ -68,17 +74,37 @@ void setup() {
   Serial.print("defaultAcceleration: ");
   Serial.println(defaultAcceleration);  
 
-  
+  pinMode(optPin, INPUT);
+  pinMode(hallPin, INPUT);
 }
 
-void loop() {
+void loop(){
+  measureRevolution();
+}
+
+void measureRevolution(){
+  //Bring wheel to measure speed
+  if (stepper->getCurrentSpeedInMilliHz() != measureSpeedInHz){
+    waitSpeedWaitHall(2);
+  }
+  //if 1600 microsteps and 30 tubes are used, every step has 0,225 ° or 9/40 °
+    // "cut" the wheel in 30 circular segments, one for every tube: 1600/30 = 53,333(3 repeating)
+  int optVal = 0;
+  /*for (short i=0, i<= tubecount, i++){
+      int optVal = NULL;
+      }*/
+  optVal = analogRead(optPin);
+  //Serial.println(optVal);
+  delay(5);
+}
+
+/*void loop() {
   //stepper->stopMove();
-  /*stepper->setSpeedInHz(500);
+  stepper->setSpeedInHz(500);
   stepper->runForward();  
   delay(1000);
   stepper->setSpeedInHz(300);
-
-  delay(1000);*/
+  delay(1000);
   Serial.print("position before waitSpeedWaitHall(3) ");
   Serial.println(stepper->getCurrentPosition());
   Serial.flush();
@@ -101,7 +127,7 @@ void loop() {
   Serial.println(" ");
   Serial.flush();
   delay(10000);
-}
+}*/
 
 void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing
   float speedbeforeHz = stepper->getCurrentSpeedInMilliHz()/1000;
@@ -138,8 +164,8 @@ void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep spee
   }
 
   delay(timeToAccelerateInMillisec);
-  Serial.print("timeToAccelerateInMillisec ");
-  Serial.println(timeToAccelerateInMillisec);
+  //Serial.print("timeToAccelerateInMillisec ");
+  //Serial.println(timeToAccelerateInMillisec);
 }
 
 
