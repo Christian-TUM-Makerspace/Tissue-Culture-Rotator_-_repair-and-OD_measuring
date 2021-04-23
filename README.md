@@ -10,6 +10,8 @@ For monitoring microbiological growth, a sensor for the oclusion density (OD) of
 
 The wheel is rebuilt from scratch in order to allow the OD measurements.
 
+OD measurements will only work, if the slent is high. With 5 ml in a test tube, you need to put something under the adjustment screw additionally (etwas unter die Einstellschraube legen, um den Apparat schräger zu stellen).
+
 The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting and more.
 
 Some specific programs, devices etc. used in this project: 
