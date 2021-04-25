@@ -5,6 +5,22 @@
 
 //Tasks to be implemented are listed below the code
 
+//functions must be declared before they can be called
+void measurementRev();
+void waitSpeedWaitHall (int speedMode);
+
+//variables, constants, pins
+  //basics
+const unsigned short tubecount = 30;
+  //array for measured values. first column [0] for raw data, second [1] for calculated OD
+int tubeValues[tubecount][2]={0};
+
+  //for FastAccelStepper.h see above
+
+  //Pins for sensors: opt101 and hall effekt sensor KY-024
+const int optPin= 34;
+const int hallPin= 26; //supply with 3.3 V from the board!
+
 //libraries
 #include "FastAccelStepper.h"
 
@@ -13,6 +29,11 @@
 const short dirPinStepper    =32;
 const short enablePinStepper =25;
 const short stepPinStepper   =33;
+  //more for FastAccelStepper.h
+FastAccelStepperEngine engine = FastAccelStepperEngine();
+FastAccelStepper *stepper = NULL;
+
+//For speed and position control
   //Set microstep mode at the stepper driver. 1, 2, 4, 8, 16, 32
   //Set respective value here:
 const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at stepper driver TB6600.
@@ -20,36 +41,23 @@ const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at steppe
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const float defaultRpsWheel  = 2;
+const float defaultRpsWheel  = 1;
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
 const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; // in (micro-)steps/s
   //Set acceleration here:
 const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
   //Set speed for measure revolution here (in revolutions per MINUTE)
-const float rpmMeasureWheel = 0.2;
-const float measureSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
-FastAccelStepperEngine engine = FastAccelStepperEngine();
-FastAccelStepper *stepper = NULL;
-
-//functions must be declared before they can be called
-void waitSpeedWaitHall (int speedMode);
-void measureRevolution();
-
-
-//variables and constants
-  //basics
-const unsigned short tubecount = 30;
-  //array for measured values. first column [0] for raw data, second [1] for calculated OD
-unsigned short tubes[tubecount][2]={0};
-  //hall
-bool hall = false;
-  //for FastAccelStepper.h see above
-
-  //Pins for sensors, opt101 and hall effekt sensor KY-024
-const int optPin= 34;
-const int hallPin= 26;
-
-
+const float rpmMeasureWheel = 0.1;
+const float measurementSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
+  //positions on the wheel
+    //steps per tube segment
+const float stepsTubeSegm = stepsPerRevWheel/tubecount;
+const int roundStepsTubeSegm = round(stepsTubeSegm);
+/*  //Save the values of the optical measurement around one tube temporarily (find maximum afterwards)
+  //first the right size for the array must be estimated. Lets try one measurement per microsecond ms
+  //Revolutions per minute / (microseconds per minute * tubecount *2)
+int sizeArray = round(rpmMeasureWheel*stepsPerRevMotor/(60000*tubecount*2));
+int optValTemp [sizeArray] = {0};*/
 
 
 //ESP-FlexyStepper library already has built in xTaskCreate, without vTaskDelay()
@@ -78,24 +86,40 @@ void setup() {
   pinMode(hallPin, INPUT);
 }
 
-void loop(){
-  measureRevolution();
-}
-
-void measureRevolution(){
+void measurementRev(){
   //Bring wheel to measure speed
-  if (stepper->getCurrentSpeedInMilliHz() != measureSpeedInHz){
+  if (stepper->getCurrentSpeedInMilliHz()/1000 != measurementSpeedInHz){
     waitSpeedWaitHall(2);
   }
-  //if 1600 microsteps and 30 tubes are used, every step has 0,225 ° or 9/40 °
-    // "cut" the wheel in 30 circular segments, one for every tube: 1600/30 = 53,333(3 repeating)
-  int optVal = 0;
-  /*for (short i=0, i<= tubecount, i++){
-      int optVal = NULL;
-      }*/
-  optVal = analogRead(optPin);
-  //Serial.println(optVal);
-  delay(5);
+
+  int optValTemp = 0;
+  //wait until tube is near opt101
+  while(stepper->getCurrentPosition() < 0.25 * stepsTubeSegm){
+    //delay(1);
+  }
+  //measure one tube after another
+  for (short i=0; i < tubecount; i++){
+    int endPos = (i+0.5) * stepsTubeSegm;
+    //measure repeatedly while opt101 is near tube, keep the maximum value
+    int optValTemp = 0;
+    while (stepper->getCurrentPosition()< endPos){
+      optValTemp = analogRead(optPin);
+      if (optValTemp > tubeValues[i][0]){
+        tubeValues[i][0] = optValTemp;    
+      }
+    }    
+    Serial.println(tubeValues[i][0]);
+  }
+  //
+  //Check for half segment duration if hallPin is HIGH
+  //continue if otherwise try another round
+  //if then it does not work... do what?
+  //maybe "return" something that is not 0
+  //But what?
+
+  //
+  // function: send data
+  //
 }
 
 /*void loop() {
@@ -109,12 +133,10 @@ void measureRevolution(){
   Serial.println(stepper->getCurrentPosition());
   Serial.flush();
   waitSpeedWaitHall(3);
-
   Serial.print("position after waitSpeedWaitHall(3) ");
   Serial.println(stepper->getCurrentPosition());
   Serial.flush();
   delay(10000);
-
   Serial.print("position before waitSpeedWaitHall(0) ");
   Serial.println(stepper->getCurrentPosition());
   Serial.flush();
@@ -129,7 +151,7 @@ void measureRevolution(){
   delay(10000);
 }*/
 
-void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing
+void waitSpeedWaitHall (int speedMode = 1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing
   float speedbeforeHz = stepper->getCurrentSpeedInMilliHz()/1000;
   float timeToAccelerateInMillisec=0;//in ms
   if(speedMode==3){
@@ -141,8 +163,8 @@ void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep spee
     stepper->runForward();
   }
   else if(speedMode==2){  
-    stepper->setSpeedInHz(measureSpeedInHz);
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-measureSpeedInHz) / defaultAcceleration)*1000  +200;
+    stepper->setSpeedInHz(measurementSpeedInHz);
+    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-measurementSpeedInHz) / defaultAcceleration)*1000  +200;
     stepper->runForward();
   }
   else if(speedMode==0){
@@ -152,7 +174,7 @@ void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep spee
     //stepper->runForward();
   }
   else if(speedMode==4){
-    Serial.println("Speedmode 4");
+    Serial.println("Speedmode 4: test");
     stepper->setAcceleration(100);
     stepper->setSpeedInHz(500);
     stepper->move(100);
@@ -160,19 +182,25 @@ void waitSpeedWaitHall (int speedMode=1){ //Speed Modes: 0...stop, 1...keep spee
   }
   else{
     Serial.println("Error: Wrong number for speedMode");
-    Serial.println("Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing");
+    Serial.println("Speed Modes: 0...stop, 1...keep speed, 2...measurementSpeed, 3...defaultSpeed, 4...for testing");
   }
 
   delay(timeToAccelerateInMillisec);
   //Serial.print("timeToAccelerateInMillisec ");
   //Serial.println(timeToAccelerateInMillisec);
+
+  while (digitalRead(hallPin) == HIGH){
+    delay(1);
+  }
+  Serial.println("hallPin near");
+  stepper->setCurrentPosition(0);  
 }
 
+void loop(){
+  measurementRev();
+}
 
 /*
-void measureRev(){
-  
-}
 //replace by an interrupt
 //void readStopButton(void){
 void processData(){
@@ -184,6 +212,7 @@ void processData(){
 //Tasks to be implemented:
 /////////////////////////
 
+//Multitasking was planned, but then an almost pure serial approach was used
 //Information about multitasking on ESP32:
   //https://savjee.be/2020/01/multitasking-esp32-arduino-freertos/
   //https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
