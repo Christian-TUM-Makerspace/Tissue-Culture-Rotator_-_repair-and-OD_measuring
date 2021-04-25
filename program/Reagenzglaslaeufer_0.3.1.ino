@@ -11,15 +11,16 @@ void waitSpeedWaitHall (int speedMode);
 
 //variables, constants, pins
   //basics
-const unsigned short tubecount = 30;
+const unsigned short tubecount = 40;
   //array for measured values. first column [0] for raw data, second [1] for calculated OD
 int tubeValues[tubecount][2]={0};
+
 
   //for FastAccelStepper.h see above
 
   //Pins for sensors: opt101 and hall effekt sensor KY-024
 const int optPin= 34;
-const int hallPin= 26; //supply with 3.3 V from the board!
+const int hallPin= 35; //supply with 3.3 V from the board!
 
 //libraries
 #include "FastAccelStepper.h"
@@ -47,12 +48,12 @@ const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; // in (micro-
   //Set acceleration here:
 const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
   //Set speed for measure revolution here (in revolutions per MINUTE)
-const float rpmMeasureWheel = 0.1;
+const float rpmMeasureWheel = 0.5;
 const float measurementSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
   //positions on the wheel
     //steps per tube segment
 const float stepsTubeSegm = stepsPerRevWheel/tubecount;
-const int roundStepsTubeSegm = round(stepsTubeSegm);
+const int roundedStepsTubeSegm = round(stepsTubeSegm);
 /*  //Save the values of the optical measurement around one tube temporarily (find maximum afterwards)
   //first the right size for the array must be estimated. Lets try one measurement per microsecond ms
   //Revolutions per minute / (microseconds per minute * tubecount *2)
@@ -81,6 +82,12 @@ void setup() {
   Serial.println(rpmMeasureWheel);  
   Serial.print("defaultAcceleration: ");
   Serial.println(defaultAcceleration);  
+  Serial.print("measurementSpeedInHz: ");
+  Serial.println(measurementSpeedInHz);  
+  Serial.print("roundedStepsTubeSegm: ");
+  Serial.println(roundedStepsTubeSegm);  
+  Serial.print(": ");
+  Serial.println();  
 
   pinMode(optPin, INPUT);
   pinMode(hallPin, INPUT);
@@ -107,11 +114,11 @@ void measurementRev(){
       if (optValTemp > tubeValues[i][0]){
         tubeValues[i][0] = optValTemp;    
       }
-    }    
+    }
     Serial.println(tubeValues[i][0]);
   }
   //
-  //Check for half segment duration if hallPin is HIGH
+  //Check for half segment position if hallPin is HIGH
   //continue if otherwise try another round
   //if then it does not work... do what?
   //maybe "return" something that is not 0
@@ -121,35 +128,6 @@ void measurementRev(){
   // function: send data
   //
 }
-
-/*void loop() {
-  //stepper->stopMove();
-  stepper->setSpeedInHz(500);
-  stepper->runForward();  
-  delay(1000);
-  stepper->setSpeedInHz(300);
-  delay(1000);
-  Serial.print("position before waitSpeedWaitHall(3) ");
-  Serial.println(stepper->getCurrentPosition());
-  Serial.flush();
-  waitSpeedWaitHall(3);
-  Serial.print("position after waitSpeedWaitHall(3) ");
-  Serial.println(stepper->getCurrentPosition());
-  Serial.flush();
-  delay(10000);
-  Serial.print("position before waitSpeedWaitHall(0) ");
-  Serial.println(stepper->getCurrentPosition());
-  Serial.flush();
-  waitSpeedWaitHall(0);
-  Serial.print("Speed in Hz ");  
-  Serial.println(stepper->getSpeedInMilliHz()/1000);
-  //stepper->runForward();
-  Serial.print("position after waitSpeedWaitHall(0) ");
-  Serial.println(stepper->getCurrentPosition());
-  Serial.println(" ");
-  Serial.flush();
-  delay(10000);
-}*/
 
 void waitSpeedWaitHall (int speedMode = 1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing
   float speedbeforeHz = stepper->getCurrentSpeedInMilliHz()/1000;
@@ -190,10 +168,20 @@ void waitSpeedWaitHall (int speedMode = 1){ //Speed Modes: 0...stop, 1...keep sp
   //Serial.println(timeToAccelerateInMillisec);
 
   while (digitalRead(hallPin) == HIGH){
-    delay(1);
+    delay(10);
   }
   Serial.println("hallPin near");
+
+  //a workaround: With the ESP32, FastAccelStepper.h can not set the current position when moving.
+    //see: https://github.com/gin66/FastAccelStepper/blob/258ffb42d34a971ff1f193b82b1a1abefbc27229/src/FastAccelStepper.h#L103
+  stepper->keepRunning();
+  stepper->stopMove();
+  delay(1000);
   stepper->setCurrentPosition(0);  
+  int pos = stepper->getCurrentPosition();  
+  stepper->runForward();
+  Serial.print("CurrentPosition:  ");
+  Serial.println(pos);  
 }
 
 void loop(){
