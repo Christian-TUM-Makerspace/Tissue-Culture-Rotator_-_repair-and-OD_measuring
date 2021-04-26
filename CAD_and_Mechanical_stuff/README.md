@@ -1,6 +1,6 @@
-#Material list
+# Material list
 
-##1) Printed parts:
+## 1) Printed parts:
 
 - 1x axis connection 1
 - 1x axis connection 2
@@ -10,7 +10,7 @@
 
 Note: We used PLA as printingsmaterial
 
-##2) Lasered parts:
+## 2) Lasered parts:
 
 - 1x lowest plate (ACG)
 - 1x middle plate (ACG)
@@ -19,7 +19,7 @@ Note: We used PLA as printingsmaterial
 
 Note: We used 5mm acrylic glass (ACG) and 2mm foam rubber (FR)
 
-##3) Some screws and similiar parts (not complete)
+## 3) Some screws and similiar parts (not complete)
 
 - 2m M5 threaded rod
 - M5 nuts
