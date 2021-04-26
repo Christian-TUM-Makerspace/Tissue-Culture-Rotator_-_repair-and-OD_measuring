@@ -32,6 +32,9 @@ Note: We used 5mm acrylic glass (ACG) and 2mm foam rubber (FR)
 
 ## 4) Some electronical parts (not complete)
 -ESP32
+
 -USB Hub
+
 -Potentiometer 1 MOhm for 6 mm hole
+
 -LED 5mm, about 600 nm, small angle, bright (we use EVERLIGHT 383-2UYOC/S400-A7)
