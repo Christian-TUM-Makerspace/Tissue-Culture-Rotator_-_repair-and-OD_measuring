@@ -7,27 +7,25 @@
 
 //functions must be declared before they can be called
 void measurementRev();
-void waitSpeedWaitHall (int speedMode);
+void waitSpeedWaitHall (int speedMode, bool hallPosition);
 
 //variables, constants, pins
   //basics
 const unsigned short tubecount = 40;
-  //array for measured values. first column [0] for raw data, second [1] for calculated OD
+  //array for measured values. first column [0] for raw data, second [1] for testing purposes (position for example)
 int tubeValues[tubecount][2]={0};
-
-
-  //for FastAccelStepper.h see above
 
   //Pins for sensors: opt101 and hall effekt sensor KY-024
 const int optPin= 34;
-const int hallPin= 35; //supply with 3.3 V from the board!
+const int hallPin= 35;
+const int testBuzzerPin = 26;
 
 //libraries
 #include "FastAccelStepper.h"
 
 //definitions for FastAccelStepper.h
   //Pins
-const short dirPinStepper    =32;
+const short dirPinStepper    =32; //not used, but maybe someone else wants to change the direction
 const short enablePinStepper =25;
 const short stepPinStepper   =33;
   //more for FastAccelStepper.h
@@ -42,26 +40,30 @@ const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at steppe
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const float defaultRpsWheel  = 1;
+const float defaultRpsWheel  = 2; //not tested above 2. 
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
-const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; // in (micro-)steps/s
+  // Default speed in (micro-)steps/s   FastAccelStepper.h "allows up 200000 generated steps per second" on ESP32. Enough.
+const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; 
   //Set acceleration here:
 const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
   //Set speed for measure revolution here (in revolutions per MINUTE)
-const float rpmMeasureWheel = 0.5;
+const float rpmMeasureWheel = 5; //0.5 seems to be around some kind of eigen frequency on our device
 const float measurementSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
   //positions on the wheel
     //steps per tube segment
 const float stepsTubeSegm = stepsPerRevWheel/tubecount;
 const int roundedStepsTubeSegm = round(stepsTubeSegm);
-/*  //Save the values of the optical measurement around one tube temporarily (find maximum afterwards)
-  //first the right size for the array must be estimated. Lets try one measurement per microsecond ms
-  //Revolutions per minute / (microseconds per minute * tubecount *2)
-int sizeArray = round(rpmMeasureWheel*stepsPerRevMotor/(60000*tubecount*2));
-int optValTemp [sizeArray] = {0};*/
 
 
-//ESP-FlexyStepper library already has built in xTaskCreate, without vTaskDelay()
+//settings for hall sensor. change here, if the measurements are not made in the right positions.
+  //offset for hall sensor. "how much to early the hall sensor reacts?" 
+  //In percentage of a segment for one test tube.
+const short offsetHallPercent = 15;
+const int offsetHallSteps = stepsTubeSegm * offsetHallPercent / 100;
+  //measured analog value of the hall sensor for which the magnet is considered near
+    //Use following test code if neccessary and choose a value some 100 below the maximum
+    //https://github.com/Christian-TUM-Makerspace/Tissue-Culture-Rotator_-_repair-and-OD_measuring/blob/86767f8fad0253bf3ae0899edf4722ef4e440fe7/testcode/Hall_Sensor_KY-024.ino
+const int valueMagnNear = 3300;
 
 void setup() {
   Serial.begin(115200);
@@ -70,10 +72,10 @@ void setup() {
   engine.init();
   stepper = engine.stepperConnectToPin(stepPinStepper);
   stepper->setDirectionPin(dirPinStepper);
-  stepper->setEnablePin(enablePinStepper);
-  stepper->setAutoEnable(true);
+  stepper->setAutoEnable(false);
+  stepper->setEnablePin(enablePinStepper,false);
   stepper->setAcceleration(defaultAcceleration);
-  stepper->setSpeedInHz(0);  
+  stepper->setSpeedInHz(0);
   Serial.print("Default revolutions per second, wheel: ");
   Serial.println(defaultRpsWheel);
   Serial.print("defaultSpeedInHz: ");
@@ -91,35 +93,57 @@ void setup() {
 
   pinMode(optPin, INPUT);
   pinMode(hallPin, INPUT);
+  pinMode(testBuzzerPin, OUTPUT);
 }
 
 void measurementRev(){
+  //for testing:
+  int countValues = 0;
+  
   //Bring wheel to measure speed
   if (stepper->getCurrentSpeedInMilliHz()/1000 != measurementSpeedInHz){
-    waitSpeedWaitHall(2);
+    waitSpeedWaitHall(2,true);
   }
 
   int optValTemp = 0;
   //wait until tube is near opt101
-  while(stepper->getCurrentPosition() < 0.25 * stepsTubeSegm){
-    delay(1);
-  }
+
   //measure one tube after another
   for (short i=0; i < tubecount; i++){
-    int endPos = (i+0.5) * stepsTubeSegm;
+    int startPos = (i+0.25) * stepsTubeSegm;
+    int endPos = (i+0.75) * stepsTubeSegm;
     //measure repeatedly while opt101 is near tube, keep the maximum value
     int optValTemp = 0;
+    while(stepper->getCurrentPosition() < startPos){
+    delay(1);
+
+    }
+    digitalWrite(testBuzzerPin, HIGH);
     while (stepper->getCurrentPosition()< endPos){
+      countValues = countValues + 1;
       optValTemp = analogRead(optPin);
       if (optValTemp > tubeValues[i][0]){
-        tubeValues[i][0] = optValTemp;    
+        tubeValues[i][0] = optValTemp;
+        //for testing:
+        tubeValues[i][1] = stepper->getCurrentPosition();
       }
     }
-    Serial.println(tubeValues[i][0]);
+    digitalWrite(testBuzzerPin, LOW);
+    Serial.print(tubeValues[i][0]);
+    Serial.print(", ");
+    Serial.println(tubeValues[i][1]);
+    Serial.println(countValues);
+    countValues = 0;
   }
-  //
-  //Check for half segment position if hallPin is HIGH
-  //continue if otherwise try another round
+  //check if the revolution ran normal
+  int posTemp = stepper->getCurrentPosition();
+  while (posTemp + 0.25*stepsTubeSegm > stepper->getCurrentPosition()){
+    if (analogRead(hallPin) < valueMagnNear){
+      Serial.println("measurement revolution successfull ");
+      return;
+    }
+  }
+    
   //if then it does not work... do what?
   //maybe "return" something that is not 0
   //But what?
@@ -129,27 +153,27 @@ void measurementRev(){
   //
 }
 
-void waitSpeedWaitHall (int speedMode = 1){ //Speed Modes: 0...stop, 1...keep speed, 2...measureSpeed, 3...defaultSpeed, 4...for testing
-  float speedbeforeHz = stepper->getCurrentSpeedInMilliHz()/1000;
-  float timeToAccelerateInMillisec=0;//in ms
+void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Modes: 0...stop, 1...keep speed, 2...measurementSpeed, 3...defaultSpeed, 4...for testing
+  
   if(speedMode==3){
     stepper->setSpeedInHz(defaultSpeedInHz);
-    //Time to Accelerate in ms. Theoretically. Add some ms here.
-    Serial.print(" sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz)) = ");
-    Serial.println(sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz)));    
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-defaultSpeedInHz) / defaultAcceleration)*1000 +200;
     stepper->runForward();
+    Serial.println("Speed mode 3: defaultSpeed");
   }
   else if(speedMode==2){  
     stepper->setSpeedInHz(measurementSpeedInHz);
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-measurementSpeedInHz) / defaultAcceleration)*1000  +200;
+    stepper->runForward();
+    Serial.println("Speed mode 2: measurementSpeed");
+  }
+  else if(speedMode==1){
+    stepper->setSpeedInHz(stepper->getSpeedInMilliHz()*1000);
     stepper->runForward();
   }
-  else if(speedMode==0){
-    stepper->setSpeedInHz(0);
+    else if(speedMode==0){
+    stepper->keepRunning();
     stepper->stopMove();
-    timeToAccelerateInMillisec = sqrt(2 * abs(speedbeforeHz-0) / defaultAcceleration)*1000  +200;
-    //stepper->runForward();
+    stepper->setSpeedInHz(0);
+    Serial.println("Speed mode 0: stop");
   }
   else if(speedMode==4){
     Serial.println("Speedmode 4: test");
@@ -162,30 +186,39 @@ void waitSpeedWaitHall (int speedMode = 1){ //Speed Modes: 0...stop, 1...keep sp
     Serial.println("Error: Wrong number for speedMode");
     Serial.println("Speed Modes: 0...stop, 1...keep speed, 2...measurementSpeed, 3...defaultSpeed, 4...for testing");
   }
-
-  delay(timeToAccelerateInMillisec);
-  //Serial.print("timeToAccelerateInMillisec ");
-  //Serial.println(timeToAccelerateInMillisec);
-
-  while (digitalRead(hallPin) < 3300){
-    delay(10);
+  while (abs(stepper->getSpeedInMilliHz() - stepper->getCurrentSpeedInMilliHz())> 10){//somehow it never gets the same for higher speeds
+    delay(1000);
+    Serial.print(stepper->getCurrentSpeedInMilliHz());
+    Serial.println(stepper->getSpeedInMilliHz());
   }
-  Serial.println("hallPin near");
-
-  //a workaround: With the ESP32, FastAccelStepper.h can not set the current position when moving.
-    //see: https://github.com/gin66/FastAccelStepper/blob/258ffb42d34a971ff1f193b82b1a1abefbc27229/src/FastAccelStepper.h#L103
-  stepper->keepRunning();
-  stepper->stopMove();
-  delay(1000);
-  stepper->setCurrentPosition(0);  
-  int pos = stepper->getCurrentPosition();  
-  stepper->runForward();
-  Serial.print("CurrentPosition:  ");
-  Serial.println(pos);  
+  //Set the position to zero or a corrected value around zero
+    //Ignores the time for acceleration. Should be ok for measuring. Keep in mind for other uses.
+  if (hallPosition == true){
+    while (analogRead(hallPin) < valueMagnNear){
+      Serial.println("hallPin Value = ");
+      Serial.println(analogRead(hallPin));
+    }
+    Serial.println("hallPin near");
+  
+    //a workaround: With the ESP32, FastAccelStepper.h can not set the current position when moving.
+      //see: https://github.com/gin66/FastAccelStepper/blob/258ffb42d34a971ff1f193b82b1a1abefbc27229/src/FastAccelStepper.h#L103
+    stepper->keepRunning();
+    stepper->stopMove();
+    delay(1000);
+    stepper->setCurrentPosition(-offsetHallSteps);  
+    int pos = stepper->getCurrentPosition();  
+    stepper->runForward();
+  }
 }
 
 void loop(){
-  measurementRev();
+
+  waitSpeedWaitHall(3,false);
+  for(;;){
+    Serial.println(stepper->getSpeedInMilliHz());
+    Serial.println(stepper->getCurrentSpeedInMilliHz());
+    delay(1000);
+  }
 }
 
 /*
