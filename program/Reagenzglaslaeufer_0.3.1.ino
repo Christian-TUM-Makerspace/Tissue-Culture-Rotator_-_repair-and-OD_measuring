@@ -102,7 +102,7 @@ void measurementRev(){
   int optValTemp = 0;
   //wait until tube is near opt101
   while(stepper->getCurrentPosition() < 0.25 * stepsTubeSegm){
-    //delay(1);
+    delay(1);
   }
   //measure one tube after another
   for (short i=0; i < tubecount; i++){
@@ -167,7 +167,7 @@ void waitSpeedWaitHall (int speedMode = 1){ //Speed Modes: 0...stop, 1...keep sp
   //Serial.print("timeToAccelerateInMillisec ");
   //Serial.println(timeToAccelerateInMillisec);
 
-  while (digitalRead(hallPin) == HIGH){
+  while (digitalRead(hallPin) < 3300){
     delay(10);
   }
   Serial.println("hallPin near");
@@ -207,11 +207,11 @@ void processData(){
   //https://www.instructables.com/ESP32-With-Arduino-IDE-Multi-Core-Programming/
   //https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/freertos.html#_CPPv412TaskHandle_t
 
-// "at the same time, all the time":
-  //drive stepper motor via PWM FastAccelStepper.h  https://github.com/gin66/FastAccelStepper (https://github.com/pkerspe/ESP-FlexyStepper)
-  //read opt101
-  //read hall sensor (only when its likely that the magnet is near)
-  //read stopSwitch via interrupt
+  // "at the same time, all the time":
+    //drive stepper motor via PWM FastAccelStepper.h  https://github.com/gin66/FastAccelStepper (https://github.com/pkerspe/ESP-FlexyStepper)
+    //read opt101
+    //read hall sensor (only when its likely that the magnet is near)
+    //read stopSwitch via interrupt
 
 
 
@@ -223,7 +223,6 @@ void processData(){
   //send data to PC
   //correct position if neccessary
   //send ENA (to make the stepper motor loose), stop data processing meanwhile
-  //correct position if neccessary
   //maybe turn on/off a LED or use a display that shows, if the maximum of the the range of the opt101 is reached 
                                     //(to adjust sensitivity of the sensor through potentiometer if neccessary)
 
