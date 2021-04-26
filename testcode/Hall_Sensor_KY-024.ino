@@ -1,4 +1,4 @@
-#define hallSensor 32
+#define hallSensor 35
 
 int hallVal = 0;
 
