@@ -27,3 +27,11 @@ Note: We used 5mm acrylic glass (ACG) and 2mm foam rubber (FR)
 - M5 washers
 - 3x M4x20 screws
 - 3x M4 threaded insert
+
+- 1x Neodym magnet, about 10 mm diameter
+
+## 4) Some electronical parts (not complete)
+-ESP32
+-USB Hub
+-Potentiometer 1 MOhm for 6 mm hole
+-LED 5mm, about 600 nm, small angle, bright (we use EVERLIGHT 383-2UYOC/S400-A7)
