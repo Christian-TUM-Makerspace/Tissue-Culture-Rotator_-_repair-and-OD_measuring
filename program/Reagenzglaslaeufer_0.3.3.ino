@@ -27,11 +27,11 @@ const int switchPin = 27;
 //Maybe print the lines above and tape them to the device.
 //High resistance -> high amplification -> high value
   //Pins for the calibration LED (3 colors)
-const int ledBlue = 5; //to low or not in the right position
+const int ledBlue = 17; //to low or not in the right position
 const int ledGreen = 18; //Potentiometer is set correctly, if led never turns red when moving the wheel slowly around the right position.
 const int ledRed = 19; //Potentiometer is set to high.
   //Lower limit for the calibraion
-const int lowerLimitCalibration
+const int lowerLimitCalibration = 3900;
   //lower Limit for calibration. below the calibration LED will turn blue.
   //ESP32 analogRead ranges between 0 and 4095 (12 bit). Change if you use a board with other values.
 const int analogMax = 4095;
@@ -57,7 +57,7 @@ const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at steppe
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const float defaultRpsWheel  = 2; //not tested above 2. 
+const float defaultRpsWheel  = 0.5; //not tested above 2. 
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
   // Default speed in (micro-)steps/s   FastAccelStepper.h "allows up 200000 generated steps per second" on ESP32. Enough.
 const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; 
@@ -85,7 +85,8 @@ const int valueMagnNear = 2000;
 
 void setup() {
   Serial.begin(115200);
-
+  
+  pinMode(switchPin, INPUT_PULLDOWN);
   attachInterrupt(switchPin, ISR, HIGH);
   
   //for FastAccelStepper.h
@@ -110,11 +111,11 @@ void setup() {
   Serial.println(roundedStepsTubeSegm);  
   Serial.print(": ");
   Serial.println();  
+  
 
   pinMode(optPin, INPUT);
   pinMode(hallPin, INPUT);
   pinMode(ledBlue, OUTPUT);
-  digitalWrite(ledBlue, LOW);//somehow it shines a little
   pinMode(ledGreen, OUTPUT);
   pinMode(ledRed, OUTPUT);
 }
@@ -203,7 +204,7 @@ void measurementRev(){
 
 //Set new speed, wait until it is reached, if hallPosition = true: wait for magnet and set position to 0 there (or near zero, with offset)
 void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Modes: 0...stop, 1...keep speed, 2...measurementSpeed, 3...defaultSpeed, 4...for testing
-  stepper->setEnablePin(enablePinStepper,false)
+  stepper->setEnablePin(enablePinStepper,false);
   
   if(speedMode==3){
     stepper->setSpeedInHz(defaultSpeedInHz);
@@ -245,8 +246,6 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
     //Ignores the time for acceleration. Should be ok for measuring. Keep in mind for other uses.
   if (hallPosition == true){
     while (analogRead(hallPin) > valueMagnNear){
-      Serial.println("hallPin Value = ");
-      Serial.println(analogRead(hallPin));
     }
     Serial.println("hallPin near");
   
@@ -264,8 +263,9 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
 void loop(){
 
   waitSpeedWaitHall(3,false);
+  delay(1000);
+  waitSpeedWaitHall(0,false);
   delay(10000);
-  measurementRev();
   
 }
 
