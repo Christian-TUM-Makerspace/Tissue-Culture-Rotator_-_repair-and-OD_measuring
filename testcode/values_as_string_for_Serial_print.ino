@@ -4,6 +4,9 @@
 //data as keyword > comma and space > number of the curren measurement revolution > comma and space > 
   // > "measured" value > comma and space 
   //  the line above repeated until tubecount is reached (also ", " in the end)
+//example:
+  //data, 13, 832, 766, 764, 759, 761, 763, 747, 740, 767, 787, 827, 837, 819, 763, 783, 832, 807, 799, 750, 765, 740, 828, 833, 831, 824, 789, 807, 796, 835, 783, 751, 824, 787, 782, 783, 749, 773, 794, 808, 742, 
+
 
 //Tubes can be identified through the position in the string
 
