@@ -60,7 +60,8 @@ const int roundedStepsTubeSegm = round(stepsTubeSegm);
   //In percentage of a segment for one test tube.
 const short offsetHallPercent = 15;
 const int offsetHallSteps = stepsTubeSegm * offsetHallPercent / 100;
-  //measured analog value of the hall sensor for which the magnet is considered near
+  //measured analog value of the hall sensor ABOVE which the magnet is considered near
+    //normally a hall sensor 
     //Use following test code if neccessary and choose a value some 100 below the maximum
     //https://github.com/Christian-TUM-Makerspace/Tissue-Culture-Rotator_-_repair-and-OD_measuring/blob/86767f8fad0253bf3ae0899edf4722ef4e440fe7/testcode/Hall_Sensor_KY-024.ino
 const int valueMagnNear = 3300;
