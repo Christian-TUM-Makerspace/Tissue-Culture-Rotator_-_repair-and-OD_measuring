@@ -18,7 +18,7 @@ int tubeValues[tubecount][2]={0};
   //Pins for sensors: opt101 and hall effekt sensor KY-024
 const int optPin= 34;
 const int hallPin= 35;
-const int testBuzzerPin = 26;
+
 
 //libraries
 #include "FastAccelStepper.h"
@@ -94,7 +94,7 @@ void setup() {
 
   pinMode(optPin, INPUT);
   pinMode(hallPin, INPUT);
-  pinMode(testBuzzerPin, OUTPUT);
+  pinMode(testPin, OUTPUT);
 }
 
 void measurementRev(){
@@ -119,7 +119,6 @@ void measurementRev(){
     delay(1);
 
     }
-    digitalWrite(testBuzzerPin, HIGH);
     while (stepper->getCurrentPosition()< endPos){
       countValues = countValues + 1;
       optValTemp = analogRead(optPin);
@@ -129,7 +128,6 @@ void measurementRev(){
         tubeValues[i][1] = stepper->getCurrentPosition();
       }
     }
-    digitalWrite(testBuzzerPin, LOW);
     Serial.print(tubeValues[i][0]);
     Serial.print(", ");
     Serial.println(tubeValues[i][1]);
