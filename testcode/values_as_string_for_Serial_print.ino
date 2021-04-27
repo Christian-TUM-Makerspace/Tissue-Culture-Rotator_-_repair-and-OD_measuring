@@ -19,7 +19,7 @@ void setup() {
   Serial.begin(115200);
 }
 void loop() {
-  //new String for every measurement revolution
+  // reset String for every measurement revolution
   dataString = "data, ";
   // Number of the current measurement revolution
   dataString = dataString + measRevNr + ", ";
