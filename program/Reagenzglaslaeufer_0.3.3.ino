@@ -8,6 +8,8 @@
 //functions must be declared before they can be called
 void measurementRev();
 void waitSpeedWaitHall (int speedMode, bool hallPosition);
+void IRAM_ATTR ISR();
+void stopMode ();
 
 //variables, constants, pins
   //basics
@@ -15,9 +17,24 @@ const unsigned short tubecount = 40;
   //array for measured values. first column [0] for raw data, second [1] for testing purposes (position for example)
 int tubeValues[tubecount][2]={0};
 
-  //Pins for sensors: opt101 and hall effekt sensor KY-024
+  //Pins for sensors: opt101 and hall effekt sensor KY-024, flip switch
 const int optPin= 34;
 const int hallPin= 35;
+const int switchPin = 27;
+
+//Calibration in stopMode(): The measured values of the opt101 should not reach the maximum (4095 for ESP32, see below)
+//When the clear solution at the beginning is in the right position and the LED shines through, the value should be near 4095.
+//Maybe print the lines above and tape them to the device.
+//High resistance -> high amplification -> high value
+  //Pins for the calibration LED (3 colors)
+const int ledBlue = 5; //to low or not in the right position
+const int ledGreen = 18; //Potentiometer is set correctly, if led never turns red when moving the wheel slowly around the right position.
+const int ledRed = 19; //Potentiometer is set to high.
+  //Lower limit for the calibraion
+const int lowerLimitCalibration
+  //lower Limit for calibration. below the calibration LED will turn blue.
+  //ESP32 analogRead ranges between 0 and 4095 (12 bit). Change if you use a board with other values.
+const int analogMax = 4095;
 
 
 //libraries
@@ -47,12 +64,12 @@ const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel;
   //Set acceleration here:
 const int defaultAcceleration = stepsPerRevMotor; // in steps/s²
   //Set speed for measure revolution here (in revolutions per MINUTE)
-const float rpmMeasureWheel = 5; //0.5 seems to be around some kind of eigen frequency on our device
+const float rpmMeasureWheel = 2; //0.5 seems to be around some kind of eigen frequency on our device
 const float measurementSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
   //positions on the wheel
     //steps per tube segment
 const float stepsTubeSegm = stepsPerRevWheel/tubecount;
-const int roundedStepsTubeSegm = round(stepsTubeSegm);
+const int roundedStepsTubeSegm = round(stepsTubeSegm);//stepper can only make full (micro)steps, no comma steps
 
 
 //settings for hall sensor. change here, if the measurements are not made in the right positions.
@@ -60,14 +77,16 @@ const int roundedStepsTubeSegm = round(stepsTubeSegm);
   //In percentage of a segment for one test tube.
 const short offsetHallPercent = 15;
 const int offsetHallSteps = stepsTubeSegm * offsetHallPercent / 100;
-  //measured analog value of the hall sensor ABOVE which the magnet is considered near
-    //normally a hall sensor 
+  //measured analog value of the hall sensor BELOW which the magnet is considered near
+    //a hall sensor has a lower voltage when its near a magnet (in the right direction)
     //Use following test code if neccessary and choose a value some 100 below the maximum
     //https://github.com/Christian-TUM-Makerspace/Tissue-Culture-Rotator_-_repair-and-OD_measuring/blob/86767f8fad0253bf3ae0899edf4722ef4e440fe7/testcode/Hall_Sensor_KY-024.ino
-const int valueMagnNear = 3300;
+const int valueMagnNear = 2000;
 
 void setup() {
   Serial.begin(115200);
+
+  attachInterrupt(switchPin, ISR, HIGH);
   
   //for FastAccelStepper.h
   engine.init();
@@ -94,12 +113,45 @@ void setup() {
 
   pinMode(optPin, INPUT);
   pinMode(hallPin, INPUT);
-  pinMode(testPin, OUTPUT);
+  pinMode(ledBlue, OUTPUT);
+  digitalWrite(ledBlue, LOW);//somehow it shines a little
+  pinMode(ledGreen, OUTPUT);
+  pinMode(ledRed, OUTPUT);
+}
+
+void IRAM_ATTR ISR() {
+  stopMode ();    
+}
+
+//Set the motor free to insert the test tubes and calibrate
+//Documentation for the calibration in the header
+void stopMode (){
+  waitSpeedWaitHall(0,false);
+  stepper->setEnablePin(enablePinStepper,true);
+  for(;;){
+    int stopModeOpt = analogRead(optPin);
+    if (stopModeOpt == analogMax){
+      digitalWrite(ledBlue, LOW);
+      digitalWrite(ledGreen, LOW);
+      digitalWrite(ledRed, HIGH);
+      delay(200); // to make it visible
+    }
+    else if (lowerLimitCalibration < stopModeOpt  && stopModeOpt < analogMax){
+      digitalWrite(ledBlue, LOW);
+      digitalWrite(ledGreen, HIGH);
+      digitalWrite(ledRed, LOW);
+    }
+    else if (lowerLimitCalibration > stopModeOpt){
+      digitalWrite(ledBlue, HIGH);
+      digitalWrite(ledGreen, LOW);
+      digitalWrite(ledRed, LOW);
+    }
+  }
 }
 
 void measurementRev(){
   //for testing:
-  int countValues = 0;
+  //int countValues = 0;
   
   //Bring wheel to measure speed
   if (stepper->getCurrentSpeedInMilliHz()/1000 != measurementSpeedInHz){
@@ -120,7 +172,7 @@ void measurementRev(){
 
     }
     while (stepper->getCurrentPosition()< endPos){
-      countValues = countValues + 1;
+      //countValues = countValues + 1;
       optValTemp = analogRead(optPin);
       if (optValTemp > tubeValues[i][0]){
         tubeValues[i][0] = optValTemp;
@@ -129,15 +181,12 @@ void measurementRev(){
       }
     }
     Serial.print(tubeValues[i][0]);
-    Serial.print(", ");
-    Serial.println(tubeValues[i][1]);
-    Serial.println(countValues);
-    countValues = 0;
+
   }
   //check if the revolution ran normal
   int posTemp = stepper->getCurrentPosition();
   while (posTemp + 0.25*stepsTubeSegm > stepper->getCurrentPosition()){
-    if (analogRead(hallPin) < valueMagnNear){
+    if (analogRead(hallPin) > valueMagnNear){
       Serial.println("measurement revolution successfull ");
       return;
     }
@@ -152,7 +201,9 @@ void measurementRev(){
   //
 }
 
+//Set new speed, wait until it is reached, if hallPosition = true: wait for magnet and set position to 0 there (or near zero, with offset)
 void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Modes: 0...stop, 1...keep speed, 2...measurementSpeed, 3...defaultSpeed, 4...for testing
+  stepper->setEnablePin(enablePinStepper,false)
   
   if(speedMode==3){
     stepper->setSpeedInHz(defaultSpeedInHz);
@@ -193,7 +244,7 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
   //Set the position to zero or a corrected value around zero
     //Ignores the time for acceleration. Should be ok for measuring. Keep in mind for other uses.
   if (hallPosition == true){
-    while (analogRead(hallPin) < valueMagnNear){
+    while (analogRead(hallPin) > valueMagnNear){
       Serial.println("hallPin Value = ");
       Serial.println(analogRead(hallPin));
     }
@@ -213,11 +264,9 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
 void loop(){
 
   waitSpeedWaitHall(3,false);
-  for(;;){
-    Serial.println(stepper->getSpeedInMilliHz());
-    Serial.println(stepper->getCurrentSpeedInMilliHz());
-    delay(1000);
-  }
+  delay(10000);
+  measurementRev();
+  
 }
 
 /*
