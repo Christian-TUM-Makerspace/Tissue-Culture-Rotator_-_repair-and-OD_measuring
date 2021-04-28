@@ -64,7 +64,7 @@ const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at steppe
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const float defaultRpsWheel  = 2; //not tested above 2. 
+const float defaultRpsWheel  = 0.5; //not tested above 2. 
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
   // Default speed in (micro-)steps/s   FastAccelStepper.h "allows up 200000 generated steps per second" on ESP32. Enough.
 const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; 
@@ -88,7 +88,7 @@ const int offsetHallSteps = stepsTubeSegm * offsetHallPercent / 100;
     //a hall sensor has a lower voltage when its near a magnet (in the right direction)
     //Use following test code if neccessary and choose a value some 100 below the maximum
     //https://github.com/Christian-TUM-Makerspace/Tissue-Culture-Rotator_-_repair-and-OD_measuring/blob/86767f8fad0253bf3ae0899edf4722ef4e440fe7/testcode/Hall_Sensor_KY-024.ino
-const int valueMagnNear = 2000;
+const int valueMagnNear = 1300;
 
 void setup() {
   Serial.begin(115200);
@@ -131,7 +131,7 @@ void setup() {
 //No continious check of the flip switch. Insert function between all steps that take more than a second or so.
 void checkStopSwitch(int delayInMillis = 0){
   if (digitalRead(switchPin)== HIGH){
-    stopMode ();
+    stopMode ();    
   } 
   delay(delayInMillis);
 }
@@ -142,7 +142,8 @@ void checkStopSwitch(int delayInMillis = 0){
 void stopMode (){
   waitSpeedWaitHall(0,false);
   stepper->setEnablePin(enablePinStepper,true);
-  while (analogRead(switchPin) == HIGH) {
+  while (digitalRead(switchPin) == HIGH) {
+    Serial.println("In loop for LED and switch pin");    
     int stopModeOpt = analogRead(optPin);
     if (stopModeOpt == analogMax){
       digitalWrite(ledBlue, LOW);
@@ -165,6 +166,7 @@ void stopMode (){
   digitalWrite(ledBlue, LOW);
   digitalWrite(ledGreen, LOW);
   digitalWrite(ledRed, LOW);
+  Serial.println("End of stopMode()");  
 }
 
 void measurementRev(){
@@ -172,7 +174,7 @@ void measurementRev(){
   //int countValues = 0;
   
   //Bring wheel to measure speed
-  if (stepper->getCurrentSpeedInMilliHz()/1000 != measurementSpeedInHz){
+  if (stepper->getCurrentSpeedInMilliHz()/1000 - measurementSpeedInHz > 10){
     waitSpeedWaitHall(2,true);
   }
   //zero the array
@@ -263,19 +265,23 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
     Serial.println("Speed Modes: 0...stop, 1...keep speed, 2...measurementSpeed, 3...defaultSpeed, 4...for testing");
   }
   while (abs(stepper->getSpeedInMilliHz() - stepper->getCurrentSpeedInMilliHz())> 10){//somehow it never gets the same for higher speeds
-    delay(1000);
+    Serial.print("CurrentSpeedInMilliHz = ");    
+    Serial.println(stepper->getCurrentSpeedInMilliHz());
+    Serial.print("Set SpeedInMilliHz = ");    
+    Serial.println(stepper->getSpeedInMilliHz());
+    delay(100);
   }
   //Set the position to zero or a corrected value (= minus offset) around zero
     //Ignores the time for acceleration. Should be ok for measuring. Keep in mind for other uses.
   if (hallPosition == true){
-
+    while (analogRead(hallPin) > valueMagnNear){
+    }
     Serial.println("hallPin near");
-  
     //a workaround: With the ESP32, FastAccelStepper.h can not set the current position when moving.
       //see: https://github.com/gin66/FastAccelStepper/blob/258ffb42d34a971ff1f193b82b1a1abefbc27229/src/FastAccelStepper.h#L103
     stepper->keepRunning();
     stepper->stopMove();
-    delay(1000);
+    delay(100);
     stepper->setCurrentPosition(-offsetHallSteps);  
     int pos = stepper->getCurrentPosition();  
     stepper->runForward();
@@ -283,26 +289,26 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
 }
 
 void loop(){
-
+/*  int buttonPressed = digitalRead(switchPin);
+  if (digitalRead(switchPin) == HIGH){
+    Serial.println("switch is on");
+  } 
+  else {
+    Serial.println("switch is off");
+  }
+  delay(100);
+*/
   waitSpeedWaitHall(3,false);
-  timeNormalTurnSec = 0;
-  for (int i = 0; i < timeNormalTurnSec;){
+  timeNormalTurnSec = 1;//>=1
+  for (int i = 0; i < timeNormalTurnSec;i++){
     checkStopSwitch(1000);
   }
   if (stopMeasurement == false){
     measurementRev();
   }
-
-  
 }
 
-/*
-//replace by an interrupt
-//void readStopButton(void){
-void processData(){
-  Serial.flush()
-}
-*/
+
 
 /////////////////////////
 //Tasks to be implemented:
