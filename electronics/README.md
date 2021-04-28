@@ -11,4 +11,4 @@
 - TB6600 stepper driver (or fake)
 - PCB Board 2,54 mm, 7 x 9 cm at least
 - some resistors
-- flip switch, ideally for a 12 mm
+- flip switch, ideally for a 12 mm hole
