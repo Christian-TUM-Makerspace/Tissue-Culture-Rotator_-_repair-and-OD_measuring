@@ -8,8 +8,12 @@
 //functions must be declared before they can be called
 void measurementRev();
 void waitSpeedWaitHall (int speedMode, bool hallPosition);
-void IRAM_ATTR ISR();
 void stopMode ();
+void checkStopSwitch(int delayInMillis);
+
+//how many seconds should the wheel turn between measurement turns? (through delay(), maybe takes some ms more)
+//set here
+int timeNormalTurnSec = 60;
 
 //variables, constants, pins
   //basics
@@ -27,7 +31,7 @@ const int switchPin = 27;
 //Maybe print the lines above and tape them to the device.
 //High resistance -> high amplification -> high value
   //Pins for the calibration LED (3 colors)
-const int ledBlue = 17; //to low or not in the right position
+const int ledBlue = 5; //to low or not in the right position
 const int ledGreen = 18; //Potentiometer is set correctly, if led never turns red when moving the wheel slowly around the right position.
 const int ledRed = 19; //Potentiometer is set to high.
   //Lower limit for the calibraion
@@ -36,6 +40,9 @@ const int lowerLimitCalibration = 3900;
   //ESP32 analogRead ranges between 0 and 4095 (12 bit). Change if you use a board with other values.
 const int analogMax = 4095;
 
+  //if the magnet is not found, set true. Try once again, then stop measurement.
+bool magnetNotFound = false;
+bool stopMeasurement = false;
 
 //libraries
 #include "FastAccelStepper.h"
@@ -57,7 +64,7 @@ const int stepsPerRevMotor = 6400; // = 200 * microstepmode. See table at steppe
 const float gearRatio = 50/25; //teeth on pulley on wheel divided through teeth pulley for motor
 const float stepsPerRevWheel = stepsPerRevMotor * gearRatio;
   //Set speed here (in revolutions per second):
-const float defaultRpsWheel  = 0.5; //not tested above 2. 
+const float defaultRpsWheel  = 2; //not tested above 2. 
   //The following are own ("default") constants, the other speeds and accelerations are part of FastAccelStepper.h
   // Default speed in (micro-)steps/s   FastAccelStepper.h "allows up 200000 generated steps per second" on ESP32. Enough.
 const float defaultSpeedInHz = stepsPerRevWheel * defaultRpsWheel; 
@@ -85,10 +92,11 @@ const int valueMagnNear = 2000;
 
 void setup() {
   Serial.begin(115200);
-  
+
+  //for flip switch for stopMode()
+
   pinMode(switchPin, INPUT_PULLDOWN);
-  attachInterrupt(switchPin, ISR, HIGH);
-  
+
   //for FastAccelStepper.h
   engine.init();
   stepper = engine.stepperConnectToPin(stepPinStepper);
@@ -111,25 +119,30 @@ void setup() {
   Serial.println(roundedStepsTubeSegm);  
   Serial.print(": ");
   Serial.println();  
-  
 
   pinMode(optPin, INPUT);
   pinMode(hallPin, INPUT);
   pinMode(ledBlue, OUTPUT);
+  digitalWrite(ledBlue, LOW);//somehow it shines a little  
   pinMode(ledGreen, OUTPUT);
   pinMode(ledRed, OUTPUT);
 }
 
-void IRAM_ATTR ISR() {
-  stopMode ();    
+//No continious check of the flip switch. Insert function between all steps that take more than a second or so.
+void checkStopSwitch(int delayInMillis = 0){
+  if (digitalRead(switchPin)== HIGH){
+    stopMode ();
+  } 
+  delay(delayInMillis);
 }
 
 //Set the motor free to insert the test tubes and calibrate
 //Documentation for the calibration in the header
+//Can not be called if Speed is set 0 otherwise
 void stopMode (){
   waitSpeedWaitHall(0,false);
   stepper->setEnablePin(enablePinStepper,true);
-  for(;;){
+  while (analogRead(switchPin) == HIGH) {
     int stopModeOpt = analogRead(optPin);
     if (stopModeOpt == analogMax){
       digitalWrite(ledBlue, LOW);
@@ -148,6 +161,10 @@ void stopMode (){
       digitalWrite(ledRed, LOW);
     }
   }
+  stepper->setEnablePin(enablePinStepper,false);
+  digitalWrite(ledBlue, LOW);
+  digitalWrite(ledGreen, LOW);
+  digitalWrite(ledRed, LOW);
 }
 
 void measurementRev(){
@@ -158,16 +175,19 @@ void measurementRev(){
   if (stepper->getCurrentSpeedInMilliHz()/1000 != measurementSpeedInHz){
     waitSpeedWaitHall(2,true);
   }
+  //zero the array
+  memset(tubeValues, 0, sizeof tubeValues);
 
   int optValTemp = 0;
-  //wait until tube is near opt101
-
+  
   //measure one tube after another
   for (short i=0; i < tubecount; i++){
+    checkStopSwitch();
     int startPos = (i+0.25) * stepsTubeSegm;
     int endPos = (i+0.75) * stepsTubeSegm;
     //measure repeatedly while opt101 is near tube, keep the maximum value
     int optValTemp = 0;
+    //wait until tube is near opt101
     while(stepper->getCurrentPosition() < startPos){
     delay(1);
 
@@ -177,11 +197,11 @@ void measurementRev(){
       optValTemp = analogRead(optPin);
       if (optValTemp > tubeValues[i][0]){
         tubeValues[i][0] = optValTemp;
-        //for testing:
-        tubeValues[i][1] = stepper->getCurrentPosition();
+        //for testing, if the postions are right:
+        //tubeValues[i][1] = stepper->getCurrentPosition();
       }
     }
-    Serial.print(tubeValues[i][0]);
+    Serial.println(tubeValues[i][0]);
 
   }
   //check if the revolution ran normal
@@ -189,13 +209,18 @@ void measurementRev(){
   while (posTemp + 0.25*stepsTubeSegm > stepper->getCurrentPosition()){
     if (analogRead(hallPin) > valueMagnNear){
       Serial.println("measurement revolution successfull ");
+      magnetNotFound = false;
       return;
     }
   }
-    
-  //if then it does not work... do what?
-  //maybe "return" something that is not 0
-  //But what?
+  //stop the masurement if the magnet is not found two times in sequence
+  if (magnetNotFound == false){
+    magnetNotFound = true;
+  }
+  else {
+    stopMeasurement = true;
+    Serial.println("Magnet was not found two times in sequence. Stopping measurement.");
+  }  
 
   //
   // function: send data
@@ -220,7 +245,7 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
     stepper->setSpeedInHz(stepper->getSpeedInMilliHz()*1000);
     stepper->runForward();
   }
-    else if(speedMode==0){
+  else if(speedMode==0){
     stepper->keepRunning();
     stepper->stopMove();
     stepper->setSpeedInHz(0);
@@ -239,14 +264,11 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
   }
   while (abs(stepper->getSpeedInMilliHz() - stepper->getCurrentSpeedInMilliHz())> 10){//somehow it never gets the same for higher speeds
     delay(1000);
-    Serial.print(stepper->getCurrentSpeedInMilliHz());
-    Serial.println(stepper->getSpeedInMilliHz());
   }
-  //Set the position to zero or a corrected value around zero
+  //Set the position to zero or a corrected value (= minus offset) around zero
     //Ignores the time for acceleration. Should be ok for measuring. Keep in mind for other uses.
   if (hallPosition == true){
-    while (analogRead(hallPin) > valueMagnNear){
-    }
+
     Serial.println("hallPin near");
   
     //a workaround: With the ESP32, FastAccelStepper.h can not set the current position when moving.
@@ -263,9 +285,14 @@ void waitSpeedWaitHall (int speedMode = 1, bool hallPosition = true){ //Speed Mo
 void loop(){
 
   waitSpeedWaitHall(3,false);
-  delay(1000);
-  waitSpeedWaitHall(0,false);
-  delay(10000);
+  timeNormalTurnSec = 0;
+  for (int i = 0; i < timeNormalTurnSec;){
+    checkStopSwitch(1000);
+  }
+  if (stopMeasurement == false){
+    measurementRev();
+  }
+
   
 }
 
@@ -281,7 +308,7 @@ void processData(){
 //Tasks to be implemented:
 /////////////////////////
 
-//Multitasking was planned, but then an almost pure serial approach was used
+//Multitasking was planned, but then an almost pure serial approach was used. Even for the stopSwitch.
 //Information about multitasking on ESP32:
   //https://savjee.be/2020/01/multitasking-esp32-arduino-freertos/
   //https://randomnerdtutorials.com/esp32-dual-core-arduino-ide/
