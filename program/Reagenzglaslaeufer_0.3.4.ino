@@ -31,7 +31,7 @@ const int switchPin = 27;
 //Maybe print the lines above and tape them to the device.
 //High resistance -> high amplification -> high value
   //Pins for the calibration LED (3 colors)
-const int ledBlue = 5; //to low or not in the right position
+const int ledBlue = 17; //to low or not in the right position
 const int ledGreen = 18; //Potentiometer is set correctly, if led never turns red when moving the wheel slowly around the right position.
 const int ledRed = 19; //Potentiometer is set to high.
   //Lower limit for the calibraion
