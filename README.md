@@ -15,7 +15,7 @@ OD measurements will only work, if the slent is high (wenn der Apparat sehr schr
 The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting and more.
 
 Some specific programs, devices etc. used in this project: 
-Arduino IDE, [FastAccelStepper library](https://github.com/gin66/FastAccelStepper), Python, ESP32, Inventor, China Lasercutter.
+Arduino IDE, [FastAccelStepper library](https://github.com/gin66/FastAccelStepper), ESP32, Inventor, China Lasercutter.
 
 ## There are important READMEs in the subfolders
 
