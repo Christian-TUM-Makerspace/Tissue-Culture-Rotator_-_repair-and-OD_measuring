@@ -26,6 +26,7 @@ const int optPin= 34;
 const int hallPin= 35;
 const int switchPin = 27;
 
+//Was not finished. Code is mostly written, but there was no time to find the problems.
 //Calibration in stopMode(): The measured values of the opt101 should not reach the maximum (4095 for ESP32, see below)
 //When the clear solution at the beginning is in the right position and the LED shines through, the value should be near 4095.
 //Maybe print the lines above and tape them to the device.
@@ -34,7 +35,8 @@ const int switchPin = 27;
 const int ledBlue = 17; //to low or not in the right position
 const int ledGreen = 18; //Potentiometer is set correctly, if led never turns red when moving the wheel slowly around the right position.
 const int ledRed = 19; //Potentiometer is set to high.
-  //Lower limit for the calibraion
+//RGB LED could also be used for showing the OD. Just an idea, no code here.
+  //Lower limit for the calibration
 const int lowerLimitCalibration = 3900;
   //lower Limit for calibration. below the calibration LED will turn blue.
   //ESP32 analogRead ranges between 0 and 4095 (12 bit). Change if you use a board with other values.
@@ -78,6 +80,9 @@ const float measurementSpeedInHz = stepsPerRevWheel * rpmMeasureWheel / 60;
 const float stepsTubeSegm = stepsPerRevWheel/tubecount;
 const int roundedStepsTubeSegm = round(stepsTubeSegm);//stepper can only make full (micro)steps, no comma steps
 
+//to Serial.print the values in one print with "data" as keyword
+String dataString = "data, ";
+int measRevNr = 0;
 
 //settings for hall sensor. change here, if the measurements are not made in the right positions.
   //offset for hall sensor. "how much to early the hall sensor reacts?" 
@@ -136,6 +141,7 @@ void checkStopSwitch(int delayInMillis = 0){
   delay(delayInMillis);
 }
 
+//Does not work
 //Set the motor free to insert the test tubes and calibrate
 //Documentation for the calibration in the header
 //Can not be called if Speed is set 0 otherwise
@@ -181,6 +187,11 @@ void measurementRev(){
   memset(tubeValues, 0, sizeof tubeValues);
 
   int optValTemp = 0;
+
+  // reset String for every measurement revolution
+  dataString = "data, ";
+  // Number of the current measurement revolution
+  dataString = dataString + measRevNr + ", ";
   
   //measure one tube after another
   for (short i=0; i < tubecount; i++){
@@ -201,7 +212,11 @@ void measurementRev(){
         tubeValues[i][0] = optValTemp;
         //for testing, if the postions are right:
         //tubeValues[i][1] = stepper->getCurrentPosition();
+        
+        //for OD
+        //tubeValues[i][1] = insert formula for OD here. OD = f(tubeValues[i][0]);
       }
+      dataString = dataString + optValTemp + ", ";
     }
     Serial.println(tubeValues[i][0]);
 
@@ -211,6 +226,7 @@ void measurementRev(){
   while (posTemp + 0.25*stepsTubeSegm > stepper->getCurrentPosition()){
     if (analogRead(hallPin) > valueMagnNear){
       Serial.println("measurement revolution successfull ");
+      Serial.println(dataString);
       magnetNotFound = false;
       return;
     }
@@ -298,13 +314,15 @@ void loop(){
   }
   delay(100);
 */
-  waitSpeedWaitHall(3,false);
-  timeNormalTurnSec = 1;//>=1
-  for (int i = 0; i < timeNormalTurnSec;i++){
-    checkStopSwitch(1000);
-  }
   if (stopMeasurement == false){
     measurementRev();
+    waitSpeedWaitHall(3,false);
+    timeNormalTurnSec = 1;//>=1
+    for (int i = 0; i < timeNormalTurnSec;i++){
+      delay(1000);
+      //checkStopSwitch(1000);
+    }
+
   }
 }
 
