@@ -314,8 +314,8 @@ void loop(){
   }
   delay(100);
 */
-  if (stopMeasurement == false){
-    measurementRev();
+ /* if (stopMeasurement == false){
+    /*measurementRev();
     waitSpeedWaitHall(3,false);
     timeNormalTurnSec = 1;//>=1
     for (int i = 0; i < timeNormalTurnSec;i++){
@@ -324,6 +324,9 @@ void loop(){
     }
 
   }
+  */
+  Serial.println(analogRead(optPin));
+  delay(100);
 }
 
 
