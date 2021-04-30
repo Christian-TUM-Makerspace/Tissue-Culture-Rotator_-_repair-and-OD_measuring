@@ -1,0 +1,729 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FRAME GUID="2FB25471-B62C-4EE6-BD43-F819C095ACF8" FORMAT="0000" APP_VERSION="2.2.0.8" CHECKSUM="49437EB21DA11574">
+  <PROJECT FORMAT="1.00" NAME="Flowchart_Reagenzglaslaufer" AUTHOR="Christian" CREATED="2021.03.08 11:58:17" MODIFIED="2021.04.28 15:15:58">
+    <DIAGRAMS>
+      <DIAGRAM FORMAT="1.00" ID="0" NAME="Main flow 1" CREATED="2021.03.08 11:58:45" MODIFIED="2021.04.28 15:15:58">
+        <LAYOUT FORMAT="1.00" COLUMNS="3" ROWS="11">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="3">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="127">
+                <TEXT><![CDATA[default speed]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="5">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="140">
+                <TEXT><![CDATA[checkStopSwitch(a)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="6">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="105">
+                <TEXT><![CDATA[Stop mode]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="10">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="58">
+                <TEXT><![CDATA[End only when power off, when the USB cable is unplugged from the PC for example]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[Main flow 1]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="102">
+                <TEXT><![CDATA[Measure revolution]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="3">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="111">
+                <TEXT><![CDATA[waitSpeedWaitHall]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="119">
+                <TEXT><![CDATA[just turn around at default Speed]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="5">
+              <FIGURE SUBTYPE="PapLoopStart" FORMAT="1.00" ID="128" ASSOCIATE="130">
+                <TEXT><![CDATA[for timeNormalTurnSec]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="6">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="134">
+                <TEXT><![CDATA[switch on?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="7">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="132">
+                <TEXT><![CDATA[delay(1000)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="8">
+              <FIGURE SUBTYPE="PapLoopEnd" FORMAT="1.00" ID="130" ASSOCIATE="128">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="9">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="121">
+                <TEXT><![CDATA[wait 10 minutes]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="10">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="2">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="116">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="9">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="123">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="103" FROM="102" TO="111" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="102" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="125" FROM="123" TO="116" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="124" FROM="121" TO="123" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="120" FROM="111" TO="119" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="118" FROM="116" TO="102" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="122" FROM="119" TO="128" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="139" FROM="134" TO="105" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="131" FROM="130" TO="121" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="129" FROM="128" TO="134" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="133" FROM="132" TO="130" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="135" FROM="134" TO="132" TEXT="no" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="1" NAME="Measure revolution" CREATED="2021.03.08 12:20:02" MODIFIED="2021.04.25 20:52:54">
+        <LAYOUT FORMAT="1.00" COLUMNS="3" ROWS="17">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="2">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="102">
+                <TEXT><![CDATA[without slower measure revolution:
+at least 500 times per turn (maybe 1000)
+propably 2 turns per second (maybe more, lets say 4)
+500 * 2 = 1000, 1000 * 4 = 4000
+around 1000 to 4000 measurements per second
+1000 ms / 1000 measurements per second
+-> around 0,25 ms to 1 ms per measurement]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="3">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="101">
+                <TEXT><![CDATA[Drive stepper motor all the time by PWM/FastAccelStepper.h]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="4">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="147">
+                <TEXT><![CDATA[measureSpeed]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="6">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="150">
+                <TEXT><![CDATA[Duration for one Tube segment
+durTubeSegm = durOneTurn / tubeCount
+
+durOneTurn = 1/rpmMeasureWheel * 60s/min
+
+Time from Magnet to center of tube 
+≈ 1/2 * durTubeSegm
+
+Time from Magnet to "Sensor near tube"
+≈ 1/4 * durTubeSegm (just a guess)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="7">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="151">
+                <TEXT><![CDATA[Or with positions
+
+"cut" the wheel in 40 circular segments, one for every tube: 1600/40 = 40
+
+(if 1600 microsteps, every step has 360 ° / 1600 = 0,225 ° = 9/40 °) better work with steps and position, FastAccelStepper.h work with that
+
+steps per tube segment
+stepsTubeSegm = stepsPerRevWheel/tubeCount
+
+Position center of tube (from Magnet)
+≈ 1/2 * stepsTubeSegm
+
+Distance from Magnet to "Sensor near tube"
+distMagnTube ≈ 1/4 * stepsTubeSegm (just a guess)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="8">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="34">
+                <TEXT><![CDATA[for a small timeframe while the test tube is in front of the opt101 sensor, read opt101 is repeated]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="11">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="30">
+                <TEXT><![CDATA[Number of the recent test tube = count of test tubes in one turn?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="13">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="37">
+                <TEXT><![CDATA[Verify if one revolution is finished]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="14">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="152">
+                <TEXT><![CDATA[What should be done if it measurement fails?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[Measure revolution]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="145">
+                <TEXT><![CDATA[waitSpeedWaitHall]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="5">
+              <FIGURE SUBTYPE="PapLoopStart" FORMAT="1.00" ID="129" ASSOCIATE="131">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="6">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="149">
+                <TEXT><![CDATA[wait untill tube is near]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="7">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="6">
+                <TEXT><![CDATA[read opt101, save temporarily]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="8">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="140">
+                <TEXT><![CDATA[stop measuring when tube is over]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="9">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="24">
+                <TEXT><![CDATA[find maximum of test tube n, save in array]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="10">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="26">
+                <TEXT><![CDATA[test tube = previous test tube + 1]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="11">
+              <FIGURE SUBTYPE="PapLoopEnd" FORMAT="1.00" ID="131" ASSOCIATE="129">
+                <TEXT><![CDATA[number of tested tubes = number of tubes?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="12">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="35">
+                <TEXT><![CDATA[read hall-effect sensor]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="13">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="38">
+                <TEXT><![CDATA[Magnet in front of hall-effect sensor?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="14">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="104">
+                <TEXT><![CDATA[Data revolution]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="15">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="40">
+                <TEXT><![CDATA[Process data and send to PC]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="16">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="13">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="153">
+                <TEXT><![CDATA[Do what if measuremnt fails?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="137" FROM="26" TO="131" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="136" FROM="24" TO="26" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="134" FROM="131" TO="35" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="36" FROM="35" TO="38" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="142" FROM="104" TO="40" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="135" FROM="6" TO="140" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="39" FROM="38" TO="104" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="143" FROM="40" TO="2" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="41" FROM="38" TO="153" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="130" FROM="129" TO="149" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="146" FROM="145" TO="129" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="139" FROM="149" TO="6" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="141" FROM="140" TO="24" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="145" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="2" NAME="Stop mode" CREATED="2021.03.08 13:01:33" MODIFIED="2021.04.13 20:23:47">
+        <LAYOUT FORMAT="1.00" COLUMNS="6" ROWS="10">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="3">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="92">
+                <TEXT><![CDATA[Maybe invert ENA.
+
+Maybe connect ENA directly with flip switch instead/additionally or connect flip switch (2 poles) with motor voltage directly additionally. No deceleration then.]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="8">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="93">
+                <TEXT><![CDATA[Maybe connect ENA directly with flip switch instead]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[Stop mode]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="97">
+                <TEXT><![CDATA[decelerate]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="3">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="4">
+                <TEXT><![CDATA[Disable Motor with ENA]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapInput" FORMAT="1.00" ID="85">
+                <TEXT><![CDATA[Read stopSwitch]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="5">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="17">
+                <TEXT><![CDATA[stopSwitch on?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="6">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="81">
+                <TEXT><![CDATA[delay(100)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="7">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="57">
+                <TEXT><![CDATA[Red,Yellow and Green LED off]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="8">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="86">
+                <TEXT><![CDATA[Disable Motor with ENA]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="9">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="3">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="94">
+                <TEXT><![CDATA[ENA on this driver could be better described as "disable" or "low active enable"]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="5">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="9">
+                <TEXT><![CDATA[read opt101]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="6">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="12">
+                <TEXT><![CDATA[value > range maximum?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="7">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="14">
+                <TEXT><![CDATA[minimum < value < maximum?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="8">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="101">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="3" ROW="6">
+              <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="83">
+                <TEXT><![CDATA[Red LED on
+other LEDs off
++ small delay]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="3" ROW="7">
+              <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="84">
+                <TEXT><![CDATA[Green LED on
+other LEDs off]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="3" ROW="8">
+              <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="100">
+                <TEXT><![CDATA[Yellow LED on
+other LEDs off]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="4" ROW="4">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="75">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="4" ROW="6">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="89">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="4" ROW="7">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="44">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="4" ROW="8">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="67">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="5" ROW="6">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="11">
+                <TEXT><![CDATA[The range of the opt101 can be adjusted by a potentiometer.
+There are 2 LEDs to show where in the range the recent value is located. 
+Red: at the maximum. 
+Green: between the maximum and the minimum.
+Yellow: at or below the minimum (probably 0 or near 0)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="97" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="98" FROM="97" TO="4" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="72" FROM="85" TO="17" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="10" FROM="9" TO="12" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="102" FROM="14" TO="101" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="80" FROM="17" TO="81" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="5" FROM="4" TO="85" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="79" FROM="17" TO="9" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="13" FROM="12" TO="14" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="69" FROM="67" TO="44" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="88" FROM="57" TO="86" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="82" FROM="81" TO="57" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="103" FROM="101" TO="100" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="95" FROM="75" TO="85" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="91" FROM="83" TO="89" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="45" FROM="84" TO="44" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="43" FROM="14" TO="84" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="96" FROM="89" TO="75" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="41" FROM="12" TO="83" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="87" FROM="86" TO="2" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="47" FROM="44" TO="89" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="104" FROM="100" TO="67" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="3" NAME="Process data and send to PC" CREATED="2021.03.08 14:41:55" MODIFIED="2021.04.24 18:56:58">
+        <LAYOUT FORMAT="1.00" COLUMNS="2" ROWS="6">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="3">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="4">
+                <TEXT><![CDATA[Data format not defined yet]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[Process data and send to PC]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="8">
+                <TEXT><![CDATA[Calculate Values]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="3">
+              <FIGURE SUBTYPE="PapOutput" FORMAT="1.00" ID="7">
+                <TEXT><![CDATA[Send the values to the PC via USB/Serial as csv stream?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="10">
+                <TEXT><![CDATA[set tubeValues = {0}]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="5">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="6" FROM="7" TO="10" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="8" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="9" FROM="8" TO="7" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="11" FROM="10" TO="2" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="6" NAME="calibrate position" CREATED="2021.04.14 11:54:08" MODIFIED="2021.04.14 18:37:13">
+        <LAYOUT FORMAT="1.00" COLUMNS="2" ROWS="7">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="2">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="13">
+                <TEXT><![CDATA[t = 1/(revPerSecondWheel * tubecount)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="5">
+              <FIGURE SUBTYPE="PapComment" FORMAT="1.00" ID="4">
+                <TEXT><![CDATA[Calulate position of maximum/center of first test tube.]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[calibrate position]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="7">
+                <TEXT><![CDATA[read opt101, get position, write both into an array[about10][2]]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="3">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="9">
+                <TEXT><![CDATA[get position of maximum value]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="11">
+                <TEXT><![CDATA[calculate position of new 0]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="6">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="7" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="8" FROM="7" TO="9" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="10" FROM="9" TO="11" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="12" FROM="11" TO="2" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="7" NAME="Data revolution" CREATED="2021.04.14 11:48:13" MODIFIED="2021.04.20 18:07:53">
+        <LAYOUT FORMAT="1.00" COLUMNS="1" ROWS="5">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[Data revolution]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="2">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="8">
+                <TEXT><![CDATA[keep moving]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="3">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="4">
+                <TEXT><![CDATA[Process data and send to PC]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="4">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="8" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="5" FROM="4" TO="2" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="9" FROM="8" TO="4" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="8" NAME="waitSpeedWaitHall" CREATED="2021.04.20 16:15:35" MODIFIED="2021.04.20 16:15:35">
+        <LAYOUT FORMAT="1.00" COLUMNS="3" ROWS="10">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="2">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="34">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="6">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="42">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[waitSpeedWaitHall]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="30">
+                <TEXT><![CDATA[change Speed (parameter)?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="3">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="5">
+                <TEXT><![CDATA[newSpeed (parameter)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="4">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="7">
+                <TEXT><![CDATA[keep turning]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="5">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="8">
+                <TEXT><![CDATA[actualSpeed = newSpeed?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="6">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="9">
+                <TEXT><![CDATA[Read hall-effect sensor]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="7">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="21">
+                <TEXT><![CDATA[Hall effect sensor high?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="8">
+              <FIGURE SUBTYPE="PapActivity" FORMAT="1.00" ID="45">
+                <TEXT><![CDATA[set postition = 0
+(Delete movement instructions?)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="9">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="4">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="10">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="5">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="11">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="6">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="27">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="2" ROW="7">
+              <FIGURE SUBTYPE="PapConnector" FORMAT="1.00" ID="23">
+                <TEXT><![CDATA[]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="35" FROM="30" TO="34" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="33" FROM="5" TO="7" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="30" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="31" FROM="30" TO="5" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="15" FROM="10" TO="7" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="16" FROM="7" TO="8" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="17" FROM="11" TO="10" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="18" FROM="8" TO="9" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="19" FROM="8" TO="11" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="20" FROM="9" TO="21" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="22" FROM="21" TO="45" TEXT="yes" />
+          <CONNECTION FORMAT="1.00" ID="24" FROM="21" TO="23" TEXT="no" />
+          <CONNECTION FORMAT="1.00" ID="28" FROM="27" TO="9" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="29" FROM="23" TO="27" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="44" FROM="42" TO="9" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="37" FROM="34" TO="42" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="46" FROM="45" TO="2" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+      <DIAGRAM FORMAT="1.00" ID="9" NAME="checkStopSwitch(timeInMillis)" CREATED="2021.04.28 12:42:10" MODIFIED="2021.04.28 12:42:10">
+        <LAYOUT FORMAT="1.00" COLUMNS="2" ROWS="4">
+          <ENTRIES>
+            <ENTRY COLUMN="0" ROW="0" ANCHOR="True">
+              <FIGURE SUBTYPE="PapTitle" FORMAT="1.00" ID="0">
+                <TEXT><![CDATA[checkStopSwitch(timeInMillis)]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="1">
+              <FIGURE SUBTYPE="PapStart" FORMAT="1.00" ID="1">
+                <TEXT><![CDATA[Start]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="2">
+              <FIGURE SUBTYPE="PapCondition" FORMAT="1.00" ID="4">
+                <TEXT><![CDATA[switch high?]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="0" ROW="3">
+              <FIGURE SUBTYPE="PapEnd" FORMAT="1.00" ID="2">
+                <TEXT><![CDATA[End]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+            <ENTRY COLUMN="1" ROW="2">
+              <FIGURE SUBTYPE="PapModule" FORMAT="1.00" ID="13">
+                <TEXT><![CDATA[Stop mode]]></TEXT>
+              </FIGURE>
+            </ENTRY>
+          </ENTRIES>
+        </LAYOUT>
+        <CONNECTIONS>
+          <CONNECTION FORMAT="1.00" ID="3" FROM="1" TO="4" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="15" FROM="4" TO="2" TEXT="" />
+          <CONNECTION FORMAT="1.00" ID="16" FROM="4" TO="13" TEXT="" />
+        </CONNECTIONS>
+      </DIAGRAM>
+    </DIAGRAMS>
+  </PROJECT>
+</FRAME>
