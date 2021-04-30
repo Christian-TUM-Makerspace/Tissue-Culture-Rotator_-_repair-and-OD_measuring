@@ -14,4 +14,5 @@
 - flip switch, ideally for a 12 mm hole
 
 # Other annotations
-Leaded soldering tin was used.
+- Leaded soldering tin was used.
+- Avoid front USB busses. 
