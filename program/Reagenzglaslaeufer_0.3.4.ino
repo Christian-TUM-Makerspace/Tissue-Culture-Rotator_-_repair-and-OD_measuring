@@ -13,7 +13,7 @@ void checkStopSwitch(int delayInMillis);
 
 //how many seconds should the wheel turn between measurement turns? (through delay(), maybe takes some ms more)
 //set here
-int timeNormalTurnSec = 60;
+int timeNormalTurnSec = 10;
 
 //variables, constants, pins
   //basics
@@ -93,7 +93,7 @@ const int offsetHallSteps = stepsTubeSegm * offsetHallPercent / 100;
     //a hall sensor has a lower voltage when its near a magnet (in the right direction)
     //Use following test code if neccessary and choose a value some 100 below the maximum
     //https://github.com/Christian-TUM-Makerspace/Tissue-Culture-Rotator_-_repair-and-OD_measuring/blob/86767f8fad0253bf3ae0899edf4722ef4e440fe7/testcode/Hall_Sensor_KY-024.ino
-const int valueMagnNear = 1300;
+const int valueMagnNear = 2300;
 
 void setup() {
   Serial.begin(115200);
@@ -216,8 +216,8 @@ void measurementRev(){
         //for OD
         //tubeValues[i][1] = insert formula for OD here. OD = f(tubeValues[i][0]);
       }
-      dataString = dataString + optValTemp + ", ";
     }
+    dataString = dataString + tubeValues[i][0] + ", ";
     Serial.println(tubeValues[i][0]);
 
   }
@@ -314,17 +314,22 @@ void loop(){
   }
   delay(100);
 */
- /* if (stopMeasurement == false){
-    /*measurementRev();
+  waitSpeedWaitHall(3,false);
+  for (int i = 0; i < timeNormalTurnSec;i++){
+    delay(1000);
+    //checkStopSwitch(1000);
+  }
+  if (stopMeasurement == false){
+    measurementRev();
     waitSpeedWaitHall(3,false);
-    timeNormalTurnSec = 1;//>=1
+    //timeNormalTurnSec = 1;//>=1
     for (int i = 0; i < timeNormalTurnSec;i++){
       delay(1000);
       //checkStopSwitch(1000);
     }
 
   }
-  */
+  
   Serial.println(analogRead(optPin));
   delay(100);
 }
