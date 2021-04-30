@@ -17,7 +17,10 @@ The project involves progamming, electronics, 3D CAD, 3D printing, Lasercutting 
 Some specific programs, devices etc. used in this project: 
 Arduino IDE, [FastAccelStepper library](https://github.com/gin66/FastAccelStepper), ESP32, Inventor, China Lasercutter.
 
-This is not a simple project to copy (yet). You need knowledge about the topics mentioned above, except CAD maybe.
+## Status of the project (30. April 2021)
+
+This is not a simple project to copy (yet). You need knowledge about the topics mentioned above.
+
 Many problems could be solved and almost every aspect could be improved. Mostly it would not take much time. Maybe the project will be continued in winter semester 2021/22. 
 
 ## There are important READMEs in the subfolders
